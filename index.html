@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>حاسبة تسجيل الطلاب 1448هـ</title>
+  <style>
+    :root {
+      --dark-green: #004d40;
+      --gold-accent: #c2ac7f;
+      --light-gold: #fdfaf2;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f3f4; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 10px; }
+    .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 15px; }
+    .card { background: var(--white); padding: 1.2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); width: 100%; border-top: 6px solid var(--dark-green); text-align: center; }
+    h2 { color: var(--dark-green); margin: 0; font-size: 1.1rem; }
+    .sub-title { color: #555; font-size: 0.9rem; margin-top: 5px; margin-bottom: 10px; display: block; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    .instruction-tag { display: inline-block; color: var(--dark-green); padding: 4px 10px; font-size: 0.8rem; font-weight: bold; margin-bottom: 12px; }
+    .input-row { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; margin-bottom: 12px; align-items: end; }
+    label { display: block; margin-bottom: 4px; font-weight: bold; color: var(--dark-green); font-size: 0.75rem; text-align: right; }
+    select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); border-radius: 6px; font-size: 0.9rem; text-align: center; color: var(--dark-green); background-color: var(--white); cursor: pointer; }
+    .btn-container { display: flex; justify-content: center; margin-top: 5px; }
+    .action-btn { width: 130px; padding: 10px; background-color: var(--dark-green); color: var(--white); border: 1px solid var(--gold-accent); border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: 0.3s; }
+    .calculate-btn { background-color: var(--gold-accent); color: var(--dark-green); }
+    .result-box { margin-top: 12px; padding: 12px; border-radius: 8px; background-color: var(--light-gold); border: 1px solid var(--gold-accent); color: var(--dark-green); font-size: 0.95rem; }
+    .age-grid { display: flex; justify-content: space-around; direction: ltr; margin: 10px 0; }
+    .age-val { font-size: 1.2rem; font-weight: bold; color: var(--dark-green); }
+    .age-lbl { font-size: 0.7rem; color: #555; }
+    .stage-highlight { background: var(--dark-green); color: white; padding: 18px 10px; border-radius: 8px; border-bottom: 4px solid var(--gold-accent); margin-top: 10px; }
+    .stage-title { font-size: 0.85rem; opacity: 0.9; display: block; margin-bottom: 8px; }
+    #resultText { font-size: 1.25rem; font-weight: 800; line-height: 1.5; }
+    .footer { margin-top: 10px; color: var(--dark-green); font-size: 0.85rem; font-weight: bold; text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <h2>محول التاريخ (هجري إلى ميلادي)</h2>
+    <div class="input-row" style="margin-top:15px;">
+      <div class="group"><label>اليوم</label><select id="cDay"></select></div>
+      <div class="group"><label>الشهر</label><select id="cMonth"></select></div>
+      <div class="group"><label>السنة</label><select id="cYear"></select></div>
+    </div>
+    <div class="btn-container">
+      <button class="action-btn" id="convBtn" onclick="handleConversion()">تحويل</button>
+    </div>
+    <div id="convResult" class="result-box" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h2>حاسبة أعمار الطلاب للتسجيل للعام الدراسي (1448هـ)</h2>
+    <span class="sub-title">العمر بداية العام الدراسي</span>
+    <div class="instruction-tag">تاريخ ميلاد الطالب بالميلادي</div>
+    <div class="input-row">
+      <div class="group"><label>اليوم</label><select id="gDay"></select></div>
+      <div class="group"><label>الشهر</label><select id="gMonth"></select></div>
+      <div class="group"><label>السنة</label><select id="gYear"></select></div>
+    </div>
+    <div class="btn-container">
+      <button class="action-btn calculate-btn" id="calcBtn" onclick="checkEligibility()">إحسب العمر</button>
+    </div>
+    <div id="resContainer" style="display:none;">
+      <div class="result-box">
+        <small style="font-weight: bold;">عمر الطالب عند بداية العام الدراسي:</small>
+        <div class="age-grid">
+          <div class="age-item"><span class="age-val" id="resY">0</span><span class="age-lbl">سنة</span></div>
+          <div class="age-item"><span class="age-val" id="resM">0</span><span class="age-lbl">شهر</span></div>
+          <div class="age-item"><span class="age-val" id="resD">0</span><span class="age-lbl">يوم</span></div>
+        </div>
+      </div>
+      <div class="stage-highlight">
+        <span class="stage-title">الصف الدراسي المستحق:</span>
+        <div id="resultText"></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
+</div>
+
+<script>
+  // رابط الـ Web App الخاص بك
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvWB4xkD7YeIr7yO6vJ_bizVepsN2OgHnfzSXeOQlo0wtx5AgNk_e1mGCOIMZZPkd4/exec";
+
+  const mNames = ["1- يناير", "2- فبراير", "3- مارس", "4- أبريل", "5- مايو", "6- يونيو", "7- يوليو", "8- أغسطس", "9- سبتمبر", "10- أكتوبر", "11- نوفمبر", "12- ديسمبر"];
+  const hNames = ["1- محرم", "2- صفر", "3- ربيع الأول", "4- ربيع الثاني", "5- جمادى الأول", "6- جمادى الآخر", "7- رجب", "8- شعبان", "9- رمضان", "10- شوال", "11- ذو القعدة", "12- ذو الحجة"];
+
+  function init() {
+    fill('cDay', 1, 30); fill('cMonth', 1, 12, hNames); fill('cYear', 1410, 1465, null, 1448);
+    fill('gDay', 1, 31); fill('gMonth', 1, 12, mNames); fill('gYear', 2005, 2026, null, 2020);
+  }
+
+  function fill(id, s, e, lbls, sel) {
+    const el = document.getElementById(id);
+    el.innerHTML = "";
+    for (let i = s; i <= e; i++) {
+      let opt = document.createElement('option');
+      opt.value = i; opt.text = lbls ? lbls[i-1] : i;
+      if (i === sel) opt.selected = true;
+      el.appendChild(opt);
+    }
+  }
+
+  init();
+
+  // وظيفة موحدة لإرسال البيانات لـ Google Script
+  async function callAppsScript(action, data) {
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // للتعامل مع قيود جوجل
+        body: JSON.stringify({ action: action, data: data })
+      });
+      // ملاحظة: مع no-cors لا يمكن قراءة الرد مباشرة، يفضل استخدام الطريقة العادية مع تعديل doPost في جوجل
+      // الكود أدناه يفترض أنك عدلت doPost ليدعم JSONP أو CORS بشكل صحيح
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // نسخة محسنة للتعامل مع الردود (Fetch مع الالتفاف على CORS)
+  async function apiRequest(action, data) {
+    const url = SCRIPT_URL;
+    const body = JSON.stringify({ action: action, data: data });
+    
+    // استخدام XMLHttpRequest كبديل لـ Fetch في حالات جوجل سكريبت المعقدة
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('data', body);
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({action: action, data: data})
+        })
+        .then(res => res.json())
+        .then(json => resolve(json))
+        .catch(err => {
+            // محاولة أخرى عبر GET إذا فشل POST بسبب CORS
+            const params = `?action=${action}&data=${encodeURIComponent(JSON.stringify(data))}`;
+            fetch(url + params)
+                .then(r => r.json())
+                .then(j => resolve(j))
+                .catch(e => reject(e));
+        });
+    });
+  }
+
+  async function handleConversion() {
+    const d = document.getElementById('cDay').value, m = document.getElementById('cMonth').value, y = document.getElementById('cYear').value;
+    const box = document.getElementById('convResult');
+    box.style.display = 'block'; box.innerText = "جاري التحويل...";
+    
+    try {
+      const res = await apiRequest('convert', {y, m, d, type: 'h'});
+      box.innerText = "التاريخ الميلادي: " + res.result;
+    } catch (e) {
+      box.innerText = "خطأ في التحويل، تأكد من نشر السكريبت كـ Anyone";
+    }
+  }
+
+  async function checkEligibility() {
+    const d = document.getElementById('gDay').value, m = document.getElementById('gMonth').value, y = document.getElementById('gYear').value;
+    const btn = document.getElementById('calcBtn');
+    btn.innerText = "جاري الحساب...";
+    
+    try {
+      const response = await apiRequest('calculate', {day:d, month:m, year:y});
+      const res = response.result;
+      
+      const birth = new Date(res.gDate);
+      const target = new Date(2026, 7, 24); 
+      let diffY = target.getFullYear() - birth.getFullYear(), diffM = target.getMonth() - birth.getMonth(), diffD = target.getDate() - birth.getDate();
+      if (diffD < 0) { diffM--; diffD += new Date(target.getFullYear(), target.getMonth(), 0).getDate(); }
+      if (diffM < 0) { diffY--; diffM += 12; }
+      
+      document.getElementById('resContainer').style.display = 'block';
+      document.getElementById('resY').innerText = diffY; document.getElementById('resM').innerText = diffM; document.getElementById('resD').innerText = diffD;
+      document.getElementById('resultText').innerText = res.stage;
+    } catch (e) {
+      alert("حدث خطأ في الاتصال. تأكد من إعدادات النشر في سكريبت جوجل.");
+    } finally {
+      btn.innerText = "إحسب العمر";
+    }
+  }
+</script>
+</body>
+</html>
