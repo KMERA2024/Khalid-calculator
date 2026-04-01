@@ -33,10 +33,9 @@
       margin-bottom: 20px;
     }
 
-    h2 {
+    h2, h3 {
       color: var(--dark-green);
-      font-size: 1.3rem;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .input-row {
@@ -71,7 +70,7 @@
       cursor: pointer;
       font-weight: bold;
       width: 100%;
-      margin-top: 5px;
+      margin-top: 6px;
     }
 
     .btn:hover {
@@ -125,6 +124,15 @@
   <button class="btn" onclick="setToday()">تاريخ اليوم</button>
 
   <div id="resShow" class="result-box"></div>
+
+  <hr style="margin:15px 0;">
+
+  <h3>حساب عمر الطالب</h3>
+
+  <button class="btn" onclick="calculateAge()">احسب العمر</button>
+
+  <div id="ageResult" class="result-box"></div>
+
 </div>
 
 <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
@@ -151,7 +159,7 @@
     y.value = 1442;
 
     updateDays();
-    d.value = 6;
+    d.value = 7;
   }
 
   function updateDays() {
@@ -188,6 +196,31 @@
       display.style.backgroundColor = '#ffebee';
       display.style.color = '#c62828';
     }
+  }
+
+  function calculateAge(){
+    const d = +document.getElementById('hDay').value;
+    const m = +document.getElementById('hMonth').value;
+    const y = +document.getElementById('hYear').value;
+
+    const display = document.getElementById('ageResult');
+
+    const birthDate = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
+
+    if(!birthDate.isValid()){
+      display.innerHTML = "⚠️ التاريخ غير صحيح";
+      display.style.display = 'block';
+      return;
+    }
+
+    const today = moment();
+
+    const years = today.diff(birthDate, 'years');
+    const months = today.diff(birthDate.clone().add(years, 'years'), 'months');
+    const days = today.diff(birthDate.clone().add(years, 'years').add(months, 'months'), 'days');
+
+    display.innerHTML = `🎂 العمر: ${years} سنة و ${months} شهر و ${days} يوم`;
+    display.style.display = 'block';
   }
 
   function setToday(){
