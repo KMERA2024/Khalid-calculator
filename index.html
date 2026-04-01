@@ -8,6 +8,7 @@
 :root {
   --dark-green: #004d40;
   --gold-accent: #c2ac7f;
+  --light-gold: #e6d5b3; /* لون ذهبي فاتح للأزرار */
   --light-bg: #f2f5f7;
   --white: #ffffff;
 }
@@ -17,15 +18,24 @@ h2 { color: var(--dark-green); font-size: 1.4rem; margin: 0 0 20px 0; }
 .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 .input-group label { display: block; font-size: 0.85rem; font-weight: bold; color: var(--dark-green); margin-bottom: 6px; }
 select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); border-radius: 8px; text-align: center; font-size: 1rem; }
+
 .btn { background-color: var(--dark-green); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.3s; }
 .btn:hover { opacity: 0.9; }
+
+/* تنسيق زر تاريخ اليوم باللون الذهبي الفاتح */
+.btn-today { background-color: var(--light-gold); color: var(--dark-green); border: 1px solid var(--gold-accent); }
+
 .divider { height: 2px; background-color: #eee; margin: 25px 0; }
 .section-title { color: var(--dark-green); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
 .instruction-tag { background-color: #e8f5e9; color: var(--dark-green); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+
 .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; background-color: #fdfaf2; color: var(--dark-green); border: 1px solid var(--gold-accent); font-weight: bold; display: none; line-height: 1.8; }
-.stage-highlight { background-color: var(--dark-green); color: white; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 1.2rem; border-bottom: 4px solid var(--gold-accent); }
+
+/* تنسيق النتيجة والمرحلة باللون الأبيض */
+.stage-highlight { background-color: var(--dark-green); color: white; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 1.15rem; border-bottom: 4px solid var(--gold-accent); }
+.note-white { color: white; font-size: 0.85rem; display: block; margin-top: 5px; font-weight: normal; opacity: 0.9; }
+
 .footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
-.note { font-size: 0.85rem; color: #d32f2f; margin-top: 8px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -38,7 +48,7 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
     <div class="input-group"><label>السنة</label><select id="hYear"></select></div>
   </div>
   <button class="btn" onclick="convertDate()">تحويل</button>
-  <button class="btn" onclick="setCurrentDate()" style="background: #f1f3f4; color: #333; border: 1px solid #ccc;">تاريخ اليوم</button>
+  <button class="btn btn-today" onclick="setCurrentDate()">تاريخ اليوم</button>
   <div id="convResult" class="result-box" style="background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7;"></div>
 
   <div class="divider"></div>
@@ -56,8 +66,10 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
   
   <div id="ageResult" class="result-box">
     <div id="ageText"></div>
-    <div id="stageText" class="stage-highlight"></div>
-    <div id="noteText" class="note"></div>
+    <div id="stageContainer" class="stage-highlight">
+        <span id="stageText"></span>
+        <span id="noteText" class="note-white"></span>
+    </div>
   </div>
 </div>
 
@@ -146,11 +158,10 @@ function getStageByDate(birthDate, years) {
         return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات" };
     }
     
-    // تعديل العبارة المطلوبة هنا
     if (birthDate.isBetween(d2020_08_25, d2020_11_22, null, '[]')) {
         return { 
             stage: "الفئة الثانية: الصف الأول الابتدائي", 
-            note: "(بشرط دراسة سنة كاملة في رياض الأطفال)" 
+            note: "بشرط دراسة سنة كاملة في رياض الأطفال" 
         };
     }
     
