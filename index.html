@@ -17,12 +17,13 @@
     .card { background: var(--white); padding: 1.2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); width: 100%; border-top: 6px solid var(--dark-green); text-align: center; }
     h2 { color: var(--dark-green); margin: 0; font-size: 1.1rem; }
     .sub-title { color: #555; font-size: 0.9rem; margin-top: 5px; margin-bottom: 10px; display: block; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-    .instruction-tag { display: inline-block; color: var(--dark-green); padding: 4px 10px; font-size: 0.8rem; font-weight: bold; margin-bottom: 12px; }
+    .instruction-tag { display: inline-block; color: var(--dark-green); padding: 4px 10px; font-size: 0.8rem; font-weight: bold; margin-bottom: 12px; background: #e8f5e9; border-radius: 20px; }
     .input-row { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; margin-bottom: 12px; align-items: end; }
     label { display: block; margin-bottom: 4px; font-weight: bold; color: var(--dark-green); font-size: 0.75rem; text-align: right; }
     select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); border-radius: 6px; font-size: 0.9rem; text-align: center; color: var(--dark-green); background-color: var(--white); cursor: pointer; }
     .btn-container { display: flex; justify-content: center; margin-top: 5px; }
     .action-btn { width: 130px; padding: 10px; background-color: var(--dark-green); color: var(--white); border: 1px solid var(--gold-accent); border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: 0.3s; }
+    .action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .calculate-btn { background-color: var(--gold-accent); color: var(--dark-green); }
     .result-box { margin-top: 12px; padding: 12px; border-radius: 8px; background-color: var(--light-gold); border: 1px solid var(--gold-accent); color: var(--dark-green); font-size: 0.95rem; }
     .age-grid { display: flex; justify-content: space-around; direction: ltr; margin: 10px 0; }
@@ -32,8 +33,8 @@
     .stage-title { font-size: 0.85rem; opacity: 0.9; display: block; margin-bottom: 8px; }
     #resultText { font-size: 1.25rem; font-weight: 800; line-height: 1.5; }
     .footer { margin-top: 10px; color: var(--dark-green); font-size: 0.85rem; font-weight: bold; text-align: center; }
+    .error { background-color: #ffebee; border-color: #d32f2f; color: #d32f2f; }
     .loading { opacity: 0.6; cursor: wait; }
-    .error-message { color: #d32f2f; background-color: #ffebee; border-color: #d32f2f; }
   </style>
 </head>
 <body>
@@ -54,8 +55,8 @@
 
   <div class="card">
     <h2>حاسبة أعمار الطلاب للتسجيل للعام الدراسي (1448هـ)</h2>
-    <span class="sub-title">العمر بداية العام الدراسي</span>
-    <div class="instruction-tag">تاريخ ميلاد الطالب بالميلادي</div>
+    <span class="sub-title">العمر عند بداية العام الدراسي (24 أغسطس 2026م)</span>
+    <div class="instruction-tag">📅 تاريخ ميلاد الطالب بالميلادي</div>
     <div class="input-row">
       <div class="group"><label>اليوم</label><select id="gDay"></select></div>
       <div class="group"><label>الشهر</label><select id="gMonth"></select></div>
@@ -74,7 +75,7 @@
         </div>
       </div>
       <div class="stage-highlight">
-        <span class="stage-title">الصف الدراسي المستحق:</span>
+        <span class="stage-title">🎓 المرحلة الدراسية المستحقة:</span>
         <div id="resultText"></div>
       </div>
     </div>
@@ -82,10 +83,9 @@
   <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
 </div>
 
-<!-- المكتبات الخارجية للتحويل -->
-<script src="https://cdn.jsdelivr.net/npm/hijri-date@1.0.2/dist/hijri-date.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-hijri/2.1.0/moment-hijri.min.js"></script>
+<!-- تحميل المكتبات المطلوبة -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.min.js"></script>
 
 <script>
   // بيانات الأشهر
@@ -117,69 +117,43 @@
   init();
 
   // التحقق من تحميل المكتبات
-  function isLibrariesLoaded() {
+  function checkLibraries() {
     if (typeof moment === 'undefined') {
-      console.error('Moment.js library not loaded');
+      console.error('Moment.js not loaded');
       return false;
     }
     if (typeof moment().hijri === 'undefined') {
-      console.error('Moment-Hijri library not loaded');
+      console.error('Moment-Hijri not loaded');
       return false;
     }
     return true;
   }
 
   // تحويل التاريخ الهجري إلى ميلادي باستخدام مكتبة moment-hijri
-  function hijriToGregorianExternal(year, month, day) {
+  function hijriToGregorian(year, month, day) {
     try {
-      if (!isLibrariesLoaded()) {
-        throw new Error('المكتبات لم يتم تحميلها بشكل صحيح');
+      if (!checkLibraries()) {
+        throw new Error('المكتبات لم يتم تحميلها');
       }
       
-      // إنشاء تاريخ هجري باستخدام moment-hijri
-      const hijriDate = moment(`${year}-${month}-${day}`, 'iYYYY-iM-iD');
+      const hijriStr = `${year}/${month}/${day}`;
+      const mDate = moment(hijriStr, 'iYYYY/iM/iD');
       
-      if (!hijriDate.isValid()) {
+      if (!mDate.isValid()) {
         throw new Error('التاريخ الهجري غير صحيح');
       }
       
-      // التحويل إلى ميلادي
-      const gregorianDate = hijriDate.toDate();
-      
-      return gregorianDate;
+      return mDate.toDate();
     } catch (error) {
-      console.error('Error in hijriToGregorianExternal:', error);
-      return null;
-    }
-  }
-
-  // تحويل التاريخ الميلادي إلى هجري باستخدام مكتبة moment-hijri
-  function gregorianToHijriExternal(date) {
-    try {
-      if (!isLibrariesLoaded()) {
-        throw new Error('المكتبات لم يتم تحميلها بشكل صحيح');
-      }
-      
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      
-      const hijriDate = moment(`${year}-${month}-${day}`, 'YYYY-M-D').hijri();
-      
-      return {
-        year: hijriDate.iYear(),
-        month: hijriDate.iMonth(),
-        day: hijriDate.iDate()
-      };
-    } catch (error) {
-      console.error('Error in gregorianToHijriExternal:', error);
+      console.error('Error converting hijri to gregorian:', error);
       return null;
     }
   }
 
   // تنسيق التاريخ الميلادي
   function formatGregorian(date) {
-    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
+                    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
     return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}م`;
   }
 
@@ -192,151 +166,139 @@
     const btn = document.getElementById('convBtn');
     
     box.style.display = 'block';
-    box.innerText = "جاري التحويل...";
+    box.className = 'result-box';
+    box.innerText = "⏳ جاري التحويل...";
     btn.classList.add('loading');
     btn.disabled = true;
-    box.classList.remove('error-message');
     
-    try {
-      // التحقق من تحميل المكتبات
-      if (!isLibrariesLoaded()) {
-        throw new Error('جاري تحميل المكتبات... يرجى تحديث الصفحة والمحاولة مرة أخرى');
-      }
-      
-      const gregorianDate = hijriToGregorianExternal(y, m, d);
-      
-      if (gregorianDate && !isNaN(gregorianDate.getTime())) {
-        box.innerText = "✅ التاريخ الميلادي: " + formatGregorian(gregorianDate);
-        
-        // عرض التاريخ الهجري للتحقق (اختياري)
-        const hijriCheck = gregorianToHijriExternal(gregorianDate);
-        if (hijriCheck) {
-          console.log(`التحقق: ${y}/${m}/${d} هـ = ${hijriCheck.year}/${hijriCheck.month}/${hijriCheck.day} هـ`);
+    setTimeout(() => {
+      try {
+        if (!checkLibraries()) {
+          throw new Error('المكتبات لم يتم تحميلها. يرجى تحديث الصفحة.');
         }
-      } else {
-        throw new Error('التاريخ الهجري غير صحيح');
+        
+        const gregorianDate = hijriToGregorian(y, m, d);
+        
+        if (gregorianDate && !isNaN(gregorianDate.getTime())) {
+          box.innerText = "✅ التاريخ الميلادي: " + formatGregorian(gregorianDate);
+          box.classList.remove('error');
+        } else {
+          throw new Error('التاريخ الهجري غير صحيح');
+        }
+      } catch (error) {
+        box.innerText = "❌ " + error.message;
+        box.classList.add('error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
       }
-    } catch (e) {
-      console.error(e);
-      box.classList.add('error-message');
-      box.innerText = "❌ " + e.message;
-    } finally {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
+    }, 100);
   }
 
-  // دالة تحديد المرحلة الدراسية
+  // تحديد المرحلة الدراسية حسب عمر الطالب
   function getGradeStage(ageYears, ageMonths) {
     const totalMonths = ageYears * 12 + ageMonths;
     
-    if (totalMonths < 48) return "غير مؤهل للالتحاق (أقل من 4 سنوات)";
-    if (totalMonths < 60) return "رياض الأطفال - المستوى الأول (4 سنوات)";
-    if (totalMonths < 72) return "رياض الأطفال - المستوى الثاني (5 سنوات)";
-    if (totalMonths < 84) return "الصف الأول الابتدائي (6 سنوات)";
-    if (totalMonths < 96) return "الصف الثاني الابتدائي (7 سنوات)";
-    if (totalMonths < 108) return "الصف الثالث الابتدائي (8 سنوات)";
-    if (totalMonths < 120) return "الصف الرابع الابتدائي (9 سنوات)";
-    if (totalMonths < 132) return "الصف الخامس الابتدائي (10 سنوات)";
-    if (totalMonths < 144) return "الصف السادس الابتدائي (11 سنوات)";
-    if (totalMonths < 156) return "الصف الأول المتوسط (12 سنة)";
-    if (totalMonths < 168) return "الصف الثاني المتوسط (13 سنة)";
-    if (totalMonths < 180) return "الصف الثالث المتوسط (14 سنة)";
-    if (totalMonths < 192) return "الصف الأول الثانوي (15 سنة)";
-    if (totalMonths < 204) return "الصف الثاني الثانوي (16 سنة)";
-    if (totalMonths < 216) return "الصف الثالث الثانوي (17 سنة)";
-    return "أكثر من 17 سنة - متقدم للصف الثالث الثانوي أو أعلى";
+    if (totalMonths < 48) {
+      return "غير مؤهل للالتحاق (أقل من 4 سنوات)";
+    } else if (totalMonths < 60) {
+      return "رياض الأطفال - المستوى الأول (KG1) - سن 4 سنوات";
+    } else if (totalMonths < 72) {
+      return "رياض الأطفال - المستوى الثاني (KG2) - سن 5 سنوات";
+    } else if (totalMonths < 84) {
+      return "رياض الأطفال - المستوى الثالث (KG3) - سن 6 سنوات";
+    } else if (totalMonths < 96) {
+      return "الصف الأول الابتدائي - سن 7 سنوات";
+    } else if (totalMonths < 108) {
+      return "الصف الثاني الابتدائي - سن 8 سنوات";
+    } else if (totalMonths < 120) {
+      return "الصف الثالث الابتدائي - سن 9 سنوات";
+    } else if (totalMonths < 132) {
+      return "الصف الرابع الابتدائي - سن 10 سنوات";
+    } else if (totalMonths < 144) {
+      return "الصف الخامس الابتدائي - سن 11 سنوات";
+    } else if (totalMonths < 156) {
+      return "الصف السادس الابتدائي - سن 12 سنة";
+    } else if (totalMonths < 168) {
+      return "الصف الأول المتوسط - سن 13 سنة";
+    } else if (totalMonths < 180) {
+      return "الصف الثاني المتوسط - سن 14 سنة";
+    } else if (totalMonths < 192) {
+      return "الصف الثالث المتوسط - سن 15 سنة";
+    } else if (totalMonths < 204) {
+      return "الصف الأول الثانوي - سن 16 سنة";
+    } else if (totalMonths < 216) {
+      return "الصف الثاني الثانوي - سن 17 سنة";
+    } else {
+      return "الصف الثالث الثانوي أو أعلى - سن 18 سنة فأكثر";
+    }
   }
 
-  // دالة حساب العمر والمرحلة
-  async function checkEligibility() {
+  // حساب العمر وتحديد المرحلة
+  function checkEligibility() {
     const d = parseInt(document.getElementById('gDay').value);
     const m = parseInt(document.getElementById('gMonth').value);
     const y = parseInt(document.getElementById('gYear').value);
     const btn = document.getElementById('calcBtn');
     
-    btn.innerText = "جاري الحساب...";
+    btn.innerText = "⏳ جاري الحساب...";
     btn.classList.add('loading');
     btn.disabled = true;
     
-    try {
-      const birth = new Date(y, m - 1, d);
-      const target = new Date(2026, 7, 24); // 24 أغسطس 2026
-      
-      // التحقق من صحة التاريخ
-      if (isNaN(birth.getTime())) {
-        throw new Error("تاريخ ميلاد غير صحيح");
-      }
-      
-      let diffY = target.getFullYear() - birth.getFullYear();
-      let diffM = target.getMonth() - birth.getMonth();
-      let diffD = target.getDate() - birth.getDate();
-      
-      if (diffD < 0) {
-        diffM--;
-        diffD += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
-      }
-      if (diffM < 0) {
-        diffY--;
-        diffM += 12;
-      }
-      
-      const stage = getGradeStage(diffY, diffM);
-      
-      document.getElementById('resContainer').style.display = 'block';
-      document.getElementById('resY').innerText = diffY;
-      document.getElementById('resM').innerText = diffM;
-      document.getElementById('resD').innerText = diffD;
-      document.getElementById('resultText').innerText = stage;
-      
-    } catch (e) {
-      console.error(e);
-      alert("حدث خطأ في الحساب: " + e.message);
-    } finally {
-      btn.innerText = "إحسب العمر";
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
-  }
-
-  // انتظار تحميل المكتبات قبل ربط الأزرار
-  function waitForLibraries() {
-    return new Promise((resolve) => {
-      if (typeof moment !== 'undefined' && typeof moment().hijri !== 'undefined') {
-        resolve(true);
-      } else {
-        const checkInterval = setInterval(() => {
-          if (typeof moment !== 'undefined' && typeof moment().hijri !== 'undefined') {
-            clearInterval(checkInterval);
-            resolve(true);
-          }
-        }, 100);
+    setTimeout(() => {
+      try {
+        const birth = new Date(y, m - 1, d);
         
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          resolve(false);
-        }, 5000);
+        // التحقق من صحة التاريخ
+        if (isNaN(birth.getTime())) {
+          throw new Error("تاريخ الميلاد غير صحيح");
+        }
+        
+        // تاريخ بداية العام الدراسي 1448هـ = 24 أغسطس 2026م
+        const target = new Date(2026, 7, 24); // شهر 7 = أغسطس (JavaScript شهور تبدأ من 0)
+        
+        let diffY = target.getFullYear() - birth.getFullYear();
+        let diffM = target.getMonth() - birth.getMonth();
+        let diffD = target.getDate() - birth.getDate();
+        
+        // تصحيح الفروق
+        if (diffD < 0) {
+          diffM--;
+          const lastDayOfMonth = new Date(target.getFullYear(), target.getMonth(), 0).getDate();
+          diffD += lastDayOfMonth;
+        }
+        if (diffM < 0) {
+          diffY--;
+          diffM += 12;
+        }
+        
+        // التأكد من عدم وجود قيم سالبة
+        if (diffY < 0) diffY = 0;
+        if (diffM < 0) diffM = 0;
+        if (diffD < 0) diffD = 0;
+        
+        const stage = getGradeStage(diffY, diffM);
+        
+        document.getElementById('resContainer').style.display = 'block';
+        document.getElementById('resY').innerText = diffY;
+        document.getElementById('resM').innerText = diffM;
+        document.getElementById('resD').innerText = diffD;
+        document.getElementById('resultText').innerHTML = stage;
+        
+      } catch (error) {
+        console.error('Error calculating age:', error);
+        alert("❌ حدث خطأ في الحساب: " + error.message);
+      } finally {
+        btn.innerText = "إحسب العمر";
+        btn.classList.remove('loading');
+        btn.disabled = false;
       }
-    });
+    }, 100);
   }
 
-  // تهيئة الصفحة
-  document.addEventListener('DOMContentLoaded', async () => {
-    const librariesLoaded = await waitForLibraries();
-    
-    if (librariesLoaded) {
-      console.log('✅ المكتبات تم تحميلها بنجاح');
-    } else {
-      console.warn('⚠️ المكتبات لم يتم تحميلها بشكل صحيح');
-      const convResult = document.getElementById('convResult');
-      convResult.style.display = 'block';
-      convResult.classList.add('error-message');
-      convResult.innerText = "⚠️ جاري تحميل المكتبات... يرجى تحديث الصفحة إذا استمرت المشكلة";
-    }
-    
-    document.getElementById('convBtn').addEventListener('click', handleConversion);
-    document.getElementById('calcBtn').addEventListener('click', checkEligibility);
-  });
+  // ربط الأزرار بالأحداث
+  document.getElementById('convBtn').addEventListener('click', handleConversion);
+  document.getElementById('calcBtn').addEventListener('click', checkEligibility);
 </script>
 </body>
 </html>
