@@ -45,7 +45,7 @@
       <div class="group"><label>السنة</label><select id="cYear"></select></div>
     </div>
     <div class="btn-container">
-      <button class="action-btn" id="convBtn" onclick="handleConversion()">تحويل</button>
+      <button class="action-btn" id="convBtn">تحويل</button>
     </div>
     <div id="convResult" class="result-box" style="display:none;"></div>
   </div>
@@ -60,7 +60,7 @@
       <div class="group"><label>السنة</label><select id="gYear"></select></div>
     </div>
     <div class="btn-container">
-      <button class="action-btn calculate-btn" id="calcBtn" onclick="checkEligibility()">إحسب العمر</button>
+      <button class="action-btn calculate-btn" id="calcBtn">إحسب العمر</button>
     </div>
     <div id="resContainer" style="display:none;">
       <div class="result-box">
@@ -81,109 +81,146 @@
 </div>
 
 <script>
-  // رابط الـ Web App الخاص بك
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvWB4xkD7YeIr7yO6vJ_bizVepsN2OgHnfzSXeOQlo0wtx5AgNk_e1mGCOIMZZPkd4/exec";
-
+  // بيانات الأشهر
   const mNames = ["1- يناير", "2- فبراير", "3- مارس", "4- أبريل", "5- مايو", "6- يونيو", "7- يوليو", "8- أغسطس", "9- سبتمبر", "10- أكتوبر", "11- نوفمبر", "12- ديسمبر"];
   const hNames = ["1- محرم", "2- صفر", "3- ربيع الأول", "4- ربيع الثاني", "5- جمادى الأول", "6- جمادى الآخر", "7- رجب", "8- شعبان", "9- رمضان", "10- شوال", "11- ذو القعدة", "12- ذو الحجة"];
 
-  function init() {
-    fill('cDay', 1, 30); fill('cMonth', 1, 12, hNames); fill('cYear', 1410, 1465, null, 1448);
-    fill('gDay', 1, 31); fill('gMonth', 1, 12, mNames); fill('gYear', 2005, 2026, null, 2020);
-  }
-
+  // دالة تعبئة القوائم المنسدلة
   function fill(id, s, e, lbls, sel) {
     const el = document.getElementById(id);
     el.innerHTML = "";
     for (let i = s; i <= e; i++) {
       let opt = document.createElement('option');
-      opt.value = i; opt.text = lbls ? lbls[i-1] : i;
+      opt.value = i;
+      opt.text = lbls ? lbls[i-1] : i;
       if (i === sel) opt.selected = true;
       el.appendChild(opt);
     }
   }
 
+  // تهيئة القوائم
+  function init() {
+    fill('cDay', 1, 30);
+    fill('cMonth', 1, 12, hNames, 1);
+    fill('cYear', 1410, 1465, null, 1448);
+    fill('gDay', 1, 31);
+    fill('gMonth', 1, 12, mNames, 1);
+    fill('gYear', 2005, 2026, null, 2020);
+  }
   init();
 
-  // وظيفة موحدة لإرسال البيانات لـ Google Script
-  async function callAppsScript(action, data) {
-    try {
-      const response = await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors", // للتعامل مع قيود جوجل
-        body: JSON.stringify({ action: action, data: data })
-      });
-      // ملاحظة: مع no-cors لا يمكن قراءة الرد مباشرة، يفضل استخدام الطريقة العادية مع تعديل doPost في جوجل
-      // الكود أدناه يفترض أنك عدلت doPost ليدعم JSONP أو CORS بشكل صحيح
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  // نسخة محسنة للتعامل مع الردود (Fetch مع الالتفاف على CORS)
-  async function apiRequest(action, data) {
-    const url = SCRIPT_URL;
-    const body = JSON.stringify({ action: action, data: data });
+  // دالة تحويل التاريخ الهجري إلى ميلادي (تقريبية للتبسيط)
+  function hijriToGregorian(year, month, day) {
+    // تاريخ تقريبي للعام 1448هـ = 2026-2027م
+    const hijriStartYear = 1448;
+    const gregorianStartYear = 2026;
+    const daysPerHijriYear = 354.367;
+    const daysPerGregorianYear = 365.2425;
     
-    // استخدام XMLHttpRequest كبديل لـ Fetch في حالات جوجل سكريبت المعقدة
-    return new Promise((resolve, reject) => {
-        const formData = new FormData();
-        formData.append('data', body);
-
-        fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({action: action, data: data})
-        })
-        .then(res => res.json())
-        .then(json => resolve(json))
-        .catch(err => {
-            // محاولة أخرى عبر GET إذا فشل POST بسبب CORS
-            const params = `?action=${action}&data=${encodeURIComponent(JSON.stringify(data))}`;
-            fetch(url + params)
-                .then(r => r.json())
-                .then(j => resolve(j))
-                .catch(e => reject(e));
-        });
-    });
+    let totalDays = 0;
+    for (let y = hijriStartYear; y < year; y++) {
+      totalDays += daysPerHijriYear;
+    }
+    
+    for (let m = 1; m < month; m++) {
+      // حساب أيام الشهر الهجري (تقريبي)
+      totalDays += (m <= 6 ? 30 : 29);
+    }
+    totalDays += day;
+    
+    const startDate = new Date(gregorianStartYear, 0, 1);
+    const resultDate = new Date(startDate.getTime() + totalDays * 24 * 60 * 60 * 1000);
+    return resultDate;
   }
 
+  // دالة تحويل الميلادي إلى نص
+  function formatGregorian(date) {
+    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}م`;
+  }
+
+  // دالة التحويل
   async function handleConversion() {
-    const d = document.getElementById('cDay').value, m = document.getElementById('cMonth').value, y = document.getElementById('cYear').value;
+    const d = parseInt(document.getElementById('cDay').value);
+    const m = parseInt(document.getElementById('cMonth').value);
+    const y = parseInt(document.getElementById('cYear').value);
     const box = document.getElementById('convResult');
-    box.style.display = 'block'; box.innerText = "جاري التحويل...";
+    
+    box.style.display = 'block';
+    box.innerText = "جاري التحويل...";
     
     try {
-      const res = await apiRequest('convert', {y, m, d, type: 'h'});
-      box.innerText = "التاريخ الميلادي: " + res.result;
+      const gregorianDate = hijriToGregorian(y, m, d);
+      box.innerText = "التاريخ الميلادي: " + formatGregorian(gregorianDate);
     } catch (e) {
-      box.innerText = "خطأ في التحويل، تأكد من نشر السكريبت كـ Anyone";
+      box.innerText = "خطأ في التحويل";
     }
   }
 
+  // دالة تحديد المرحلة الدراسية
+  function getGradeStage(ageYears) {
+    if (ageYears < 4) return "غير مؤهل للالتحاق";
+    if (ageYears === 4) return "رياض الأطفال - المستوى الأول";
+    if (ageYears === 5) return "رياض الأطفال - المستوى الثاني";
+    if (ageYears === 6) return "الصف الأول الابتدائي";
+    if (ageYears === 7) return "الصف الثاني الابتدائي";
+    if (ageYears === 8) return "الصف الثالث الابتدائي";
+    if (ageYears === 9) return "الصف الرابع الابتدائي";
+    if (ageYears === 10) return "الصف الخامس الابتدائي";
+    if (ageYears === 11) return "الصف السادس الابتدائي";
+    if (ageYears === 12) return "الصف الأول المتوسط";
+    if (ageYears === 13) return "الصف الثاني المتوسط";
+    if (ageYears === 14) return "الصف الثالث المتوسط";
+    if (ageYears === 15) return "الصف الأول الثانوي";
+    if (ageYears === 16) return "الصف الثاني الثانوي";
+    if (ageYears === 17) return "الصف الثالث الثانوي";
+    return "أكثر من 17 سنة - متقدم للصف الثالث الثانوي أو أعلى";
+  }
+
+  // دالة حساب العمر والمرحلة
   async function checkEligibility() {
-    const d = document.getElementById('gDay').value, m = document.getElementById('gMonth').value, y = document.getElementById('gYear').value;
+    const d = parseInt(document.getElementById('gDay').value);
+    const m = parseInt(document.getElementById('gMonth').value);
+    const y = parseInt(document.getElementById('gYear').value);
     const btn = document.getElementById('calcBtn');
+    
     btn.innerText = "جاري الحساب...";
     
     try {
-      const response = await apiRequest('calculate', {day:d, month:m, year:y});
-      const res = response.result;
+      const birth = new Date(y, m - 1, d);
+      const target = new Date(2026, 7, 24); // 24 أغسطس 2026
       
-      const birth = new Date(res.gDate);
-      const target = new Date(2026, 7, 24); 
-      let diffY = target.getFullYear() - birth.getFullYear(), diffM = target.getMonth() - birth.getMonth(), diffD = target.getDate() - birth.getDate();
-      if (diffD < 0) { diffM--; diffD += new Date(target.getFullYear(), target.getMonth(), 0).getDate(); }
-      if (diffM < 0) { diffY--; diffM += 12; }
+      let diffY = target.getFullYear() - birth.getFullYear();
+      let diffM = target.getMonth() - birth.getMonth();
+      let diffD = target.getDate() - birth.getDate();
+      
+      if (diffD < 0) {
+        diffM--;
+        diffD += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
+      }
+      if (diffM < 0) {
+        diffY--;
+        diffM += 12;
+      }
+      
+      const stage = getGradeStage(diffY);
       
       document.getElementById('resContainer').style.display = 'block';
-      document.getElementById('resY').innerText = diffY; document.getElementById('resM').innerText = diffM; document.getElementById('resD').innerText = diffD;
-      document.getElementById('resultText').innerText = res.stage;
+      document.getElementById('resY').innerText = diffY;
+      document.getElementById('resM').innerText = diffM;
+      document.getElementById('resD').innerText = diffD;
+      document.getElementById('resultText').innerText = stage;
+      
     } catch (e) {
-      alert("حدث خطأ في الاتصال. تأكد من إعدادات النشر في سكريبت جوجل.");
+      alert("حدث خطأ في الحساب");
     } finally {
       btn.innerText = "إحسب العمر";
     }
   }
+
+  // ربط الأزرار
+  document.getElementById('convBtn').addEventListener('click', handleConversion);
+  document.getElementById('calcBtn').addEventListener('click', checkEligibility);
 </script>
 </body>
 </html>
