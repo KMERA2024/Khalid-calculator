@@ -17,14 +17,15 @@ h2 { color: var(--dark-green); font-size: 1.4rem; margin: 0 0 20px 0; }
 .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 .input-group label { display: block; font-size: 0.85rem; font-weight: bold; color: var(--dark-green); margin-bottom: 6px; }
 select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); border-radius: 8px; text-align: center; font-size: 1rem; }
-.btn { background-color: var(--dark-green); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
+.btn { background-color: var(--dark-green); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.3s; }
+.btn:hover { opacity: 0.9; }
 .divider { height: 2px; background-color: #eee; margin: 25px 0; }
 .section-title { color: var(--dark-green); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
 .instruction-tag { background-color: #e8f5e9; color: var(--dark-green); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block; margin-bottom: 15px; }
 .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; background-color: #fdfaf2; color: var(--dark-green); border: 1px solid var(--gold-accent); font-weight: bold; display: none; line-height: 1.8; }
-.stage-highlight { background-color: var(--dark-green); color: white; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 1.25rem; border-bottom: 4px solid var(--gold-accent); }
+.stage-highlight { background-color: var(--dark-green); color: white; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 1.2rem; border-bottom: 4px solid var(--gold-accent); }
 .footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
-.note { font-size: 0.75rem; color: #d32f2f; margin-top: 5px; font-weight: normal; }
+.note { font-size: 0.85rem; color: #d32f2f; margin-top: 8px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -106,7 +107,7 @@ function calculateAgeAndStage() {
     const y = parseInt(document.getElementById('gYear').value);
     
     const birthDate = moment(`${y}-${m}-${d}`, "YYYY-MM-DD");
-    const targetDate = moment("2026-08-24", "YYYY-MM-DD"); // بداية العام الدراسي 1448
+    const targetDate = moment("2026-08-24", "YYYY-MM-DD"); 
 
     if(!birthDate.isValid()) return;
 
@@ -117,15 +118,13 @@ function calculateAgeAndStage() {
 
     document.getElementById('ageText').innerHTML = `عمر الطالب عند بداية الدراسة هو:<br>${years} سنة و ${months} شهر و ${days} يوم`;
     
-    // تحديد المرحلة بناءً على التواريخ في الصورة
-    const result = getStageByDate(birthDate);
+    const result = getStageByDate(birthDate, years);
     document.getElementById('stageText').innerText = result.stage;
     document.getElementById('noteText').innerText = result.note;
     document.getElementById('ageResult').style.display = 'block';
 }
 
-function getStageByDate(birthDate) {
-    // تواريخ المفاتيح حسب الصورة
+function getStageByDate(birthDate, years) {
     const d2020_08_24 = moment("2020-08-24", "YYYY-MM-DD");
     const d2020_08_25 = moment("2020-08-25", "YYYY-MM-DD");
     const d2020_11_22 = moment("2020-11-22", "YYYY-MM-DD");
@@ -135,33 +134,37 @@ function getStageByDate(birthDate) {
     const d2022_08_25 = moment("2022-08-25", "YYYY-MM-DD");
     const d2023_08_24 = moment("2023-08-24", "YYYY-MM-DD");
 
-    // 1. الصف الأول الابتدائي (الفئة الأولى)
     if (birthDate.isSameOrBefore(d2020_08_24)) {
-        return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات أو أكثر" };
+        if (years >= 7) {
+            if (years == 7) return { stage: "الصف الثاني الابتدائي", note: "" };
+            if (years == 8) return { stage: "الصف الثالث الابتدائي", note: "" };
+            if (years == 9) return { stage: "الصف الرابع الابتدائي", note: "" };
+            if (years == 10) return { stage: "الصف الخامس الابتدائي", note: "" };
+            if (years == 11) return { stage: "الصف السادس الابتدائي", note: "" };
+            if (years >= 12) return { stage: "المرحلة المتوسطة / الثانوية", note: "" };
+        }
+        return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات" };
     }
-    // 2. الصف الأول الابتدائي (الفئة الثانية - تجاوز)
+    
+    // تعديل العبارة المطلوبة هنا
     if (birthDate.isBetween(d2020_08_25, d2020_11_22, null, '[]')) {
-        return { stage: "الصف الأول الابتدائي", note: "الفئة الثانية: (بشرط دراسة سنة كاملة في رياض الأطفال)" };
+        return { 
+            stage: "الفئة الثانية: الصف الأول الابتدائي", 
+            note: "(بشرط دراسة سنة كاملة في رياض الأطفال)" 
+        };
     }
-    // 3. المستوى الثالث (KG3)
+    
     if (birthDate.isBetween(d2020_08_25, d2021_08_24, null, '[]')) {
         return { stage: "رياض الأطفال - المستوى الثالث (KG3)", note: "" };
     }
-    // 4. المستوى الثاني (KG2)
     if (birthDate.isBetween(d2021_08_25, d2022_08_24, null, '[]')) {
         return { stage: "رياض الأطفال - المستوى الثاني (KG2)", note: "" };
     }
-    // 5. المستوى الأول (KG1)
     if (birthDate.isBetween(d2022_08_25, d2023_08_24, null, '[]')) {
         return { stage: "رياض الأطفال - المستوى الأول (KG1)", note: "" };
     }
 
-    // للمواليد الأحدث أو الأقدم جداً خارج نطاق الصورة
-    if (birthDate.isAfter(d2023_08_24)) {
-        return { stage: "دون سن القبول", note: "" };
-    }
-    
-    return { stage: "مراحل تعليمية متقدمة", note: "" };
+    return { stage: birthDate.isAfter(d2023_08_24) ? "دون سن القبول" : "مراحل أخرى", note: "" };
 }
 
 window.onload = init;
