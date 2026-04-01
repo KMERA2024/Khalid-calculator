@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>حاسبة تسجيل الطلاب 1448هـ</title>
-
 <style>
 :root {
   --dark-green: #004d40;
@@ -12,108 +11,22 @@
   --light-bg: #f2f5f7;
   --white: #ffffff;
 }
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: var(--light-bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
-.card {
-  background: var(--white);
-  width: 100%;
-  max-width: 440px;
-  border-radius: 25px;
-  padding: 25px 20px;
-  text-align: center;
-  border-top: 10px solid var(--dark-green);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-}
-
+body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--light-bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+.card { background: var(--white); width: 100%; max-width: 440px; border-radius: 25px; padding: 25px 20px; text-align: center; border-top: 10px solid var(--dark-green); box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 25px; }
 h2 { color: var(--dark-green); font-size: 1.4rem; margin: 0 0 20px 0; }
-
-.input-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.input-group label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: bold;
-  color: var(--dark-green);
-  margin-bottom: 6px;
-}
-
-select {
-  width: 100%;
-  padding: 10px 2px;
-  border: 1px solid var(--gold-accent);
-  border-radius: 8px;
-  text-align: center;
-  font-size: 1rem;
-}
-
-.btn {
-  background-color: var(--dark-green);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom: 10px;
-}
-
+.input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.input-group label { display: block; font-size: 0.85rem; font-weight: bold; color: var(--dark-green); margin-bottom: 6px; }
+select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); border-radius: 8px; text-align: center; font-size: 1rem; }
+.btn { background-color: var(--dark-green); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
 .divider { height: 2px; background-color: #eee; margin: 25px 0; }
-
 .section-title { color: var(--dark-green); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
-
-.instruction-tag {
-  background-color: #e8f5e9;
-  color: var(--dark-green);
-  padding: 6px 15px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  display: inline-block;
-  margin-bottom: 15px;
-}
-
-.result-box {
-  margin-top: 15px;
-  padding: 15px;
-  border-radius: 10px;
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #a5d6a7;
-  font-weight: bold;
-  display: none;
-  line-height: 1.8;
-}
-
-.stage-highlight {
-  background-color: var(--dark-green);
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 1.2rem;
-  border-bottom: 4px solid var(--gold-accent);
-}
-
+.instruction-tag { background-color: #e8f5e9; color: var(--dark-green); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+.result-box { margin-top: 15px; padding: 15px; border-radius: 10px; background-color: #fdfaf2; color: var(--dark-green); border: 1px solid var(--gold-accent); font-weight: bold; display: none; line-height: 1.8; }
+.stage-highlight { background-color: var(--dark-green); color: white; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 1.25rem; border-bottom: 4px solid var(--gold-accent); }
 .footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
+.note { font-size: 0.75rem; color: #d32f2f; margin-top: 5px; font-weight: normal; }
 </style>
 </head>
-
 <body>
 
 <div class="card">
@@ -125,7 +38,7 @@ select {
   </div>
   <button class="btn" onclick="convertDate()">تحويل</button>
   <button class="btn" onclick="setCurrentDate()" style="background: #f1f3f4; color: #333; border: 1px solid #ccc;">تاريخ اليوم</button>
-  <div id="convResult" class="result-box"></div>
+  <div id="convResult" class="result-box" style="background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7;"></div>
 
   <div class="divider"></div>
 
@@ -140,9 +53,10 @@ select {
 
   <button class="btn" onclick="calculateAgeAndStage()" style="background-color: var(--gold-accent); color: var(--dark-green);">إحسب العمر والمرحلة</button>
   
-  <div id="ageResult" class="result-box" style="background-color: #fdfaf2; border-color: var(--gold-accent); color: var(--dark-green);">
+  <div id="ageResult" class="result-box">
     <div id="ageText"></div>
     <div id="stageText" class="stage-highlight"></div>
+    <div id="noteText" class="note"></div>
   </div>
 </div>
 
@@ -191,42 +105,66 @@ function calculateAgeAndStage() {
     const m = parseInt(document.getElementById('gMonth').value);
     const y = parseInt(document.getElementById('gYear').value);
     
-    const birthDate = moment([y, m - 1, d]);
-    const targetDate = moment([2026, 7, 24]); // 24 أغسطس 2026
+    const birthDate = moment(`${y}-${m}-${d}`, "YYYY-MM-DD");
+    const targetDate = moment("2026-08-24", "YYYY-MM-DD"); // بداية العام الدراسي 1448
 
     if(!birthDate.isValid()) return;
 
     const diff = moment.duration(targetDate.diff(birthDate));
     const years = diff.years();
     const months = diff.months();
+    const days = diff.days();
 
-    document.getElementById('ageText').innerHTML = `عمر الطالب في 24-08-2026م هو:<br>${years} سنة و ${months} شهر و ${diff.days()} يوم`;
-    document.getElementById('stageText').innerText = `المرحلة: ${getStage(years, months)}`;
+    document.getElementById('ageText').innerHTML = `عمر الطالب عند بداية الدراسة هو:<br>${years} سنة و ${months} شهر و ${days} يوم`;
+    
+    // تحديد المرحلة بناءً على التواريخ في الصورة
+    const result = getStageByDate(birthDate);
+    document.getElementById('stageText').innerText = result.stage;
+    document.getElementById('noteText').innerText = result.note;
     document.getElementById('ageResult').style.display = 'block';
 }
 
-function getStage(y, m) {
-    const totalMonths = y * 12 + m;
-    if (totalMonths < 36) return "دون سن الحضانة";
-    if (totalMonths < 48) return "روضة - مستوى أول";
-    if (totalMonths < 60) return "روضة - مستوى ثاني";
-    if (totalMonths < 72) return "تمهيدي - مستوى ثالث";
-    if (totalMonths < 84) return "الصف الأول الابتدائي";
-    if (totalMonths < 96) return "الصف الثاني الابتدائي";
-    if (totalMonths < 108) return "الصف الثالث الابتدائي";
-    if (totalMonths < 120) return "الصف الرابع الابتدائي";
-    if (totalMonths < 132) return "الصف الخامس الابتدائي";
-    if (totalMonths < 144) return "الصف السادس الابتدائي";
-    if (totalMonths < 156) return "الصف الأول المتوسط";
-    if (totalMonths < 168) return "الصف الثاني المتوسط";
-    if (totalMonths < 180) return "الصف الثالث المتوسط";
-    if (totalMonths < 192) return "الصف الأول الثانوي";
-    if (totalMonths < 204) return "الصف الثاني الثانوي";
-    return "الصف الثالث الثانوي أو أعلى";
+function getStageByDate(birthDate) {
+    // تواريخ المفاتيح حسب الصورة
+    const d2020_08_24 = moment("2020-08-24", "YYYY-MM-DD");
+    const d2020_08_25 = moment("2020-08-25", "YYYY-MM-DD");
+    const d2020_11_22 = moment("2020-11-22", "YYYY-MM-DD");
+    const d2021_08_24 = moment("2021-08-24", "YYYY-MM-DD");
+    const d2021_08_25 = moment("2021-08-25", "YYYY-MM-DD");
+    const d2022_08_24 = moment("2022-08-24", "YYYY-MM-DD");
+    const d2022_08_25 = moment("2022-08-25", "YYYY-MM-DD");
+    const d2023_08_24 = moment("2023-08-24", "YYYY-MM-DD");
+
+    // 1. الصف الأول الابتدائي (الفئة الأولى)
+    if (birthDate.isSameOrBefore(d2020_08_24)) {
+        return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات أو أكثر" };
+    }
+    // 2. الصف الأول الابتدائي (الفئة الثانية - تجاوز)
+    if (birthDate.isBetween(d2020_08_25, d2020_11_22, null, '[]')) {
+        return { stage: "الصف الأول الابتدائي", note: "الفئة الثانية: (بشرط دراسة سنة كاملة في رياض الأطفال)" };
+    }
+    // 3. المستوى الثالث (KG3)
+    if (birthDate.isBetween(d2020_08_25, d2021_08_24, null, '[]')) {
+        return { stage: "رياض الأطفال - المستوى الثالث (KG3)", note: "" };
+    }
+    // 4. المستوى الثاني (KG2)
+    if (birthDate.isBetween(d2021_08_25, d2022_08_24, null, '[]')) {
+        return { stage: "رياض الأطفال - المستوى الثاني (KG2)", note: "" };
+    }
+    // 5. المستوى الأول (KG1)
+    if (birthDate.isBetween(d2022_08_25, d2023_08_24, null, '[]')) {
+        return { stage: "رياض الأطفال - المستوى الأول (KG1)", note: "" };
+    }
+
+    // للمواليد الأحدث أو الأقدم جداً خارج نطاق الصورة
+    if (birthDate.isAfter(d2023_08_24)) {
+        return { stage: "دون سن القبول", note: "" };
+    }
+    
+    return { stage: "مراحل تعليمية متقدمة", note: "" };
 }
 
 window.onload = init;
 </script>
-
 </body>
 </html>
