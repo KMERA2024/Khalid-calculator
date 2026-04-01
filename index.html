@@ -3,129 +3,147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>محول التاريخ</title>
+<title>حاسبة تسجيل الطلاب 1448هـ</title>
 
 <style>
 :root {
-  --green: #0f4c3a;
-  --gold: #c2ac7f;
-  --bg: #f2f2f2;
+  --dark-green: #004d40;
+  --gold-accent: #c2ac7f;
+  --light-bg: #f2f5f7;
+  --white: #ffffff;
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma;
-  background: var(--bg);
-}
-
-/* الكارد */
-.card {
-  background: #fff;
-  max-width: 420px;
-  margin: 20px auto;
-  border-radius: 15px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: var(--light-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  text-align: center;
-  border-top: 6px solid var(--green);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-h2 {
-  color: var(--green);
+.card {
+  background: var(--white);
+  width: 100%;
+  max-width: 440px;
+  border-radius: 25px;
+  padding: 25px 20px;
+  text-align: center;
+  border-top: 10px solid var(--dark-green);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+h2 { color: var(--dark-green); font-size: 1.4rem; margin: 0 0 20px 0; }
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-/* الحقول */
-.input-row {
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-}
-
-.field {
-  flex: 1;
-}
-
-label {
-  font-size: 12px;
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
   font-weight: bold;
-  color: var(--green);
+  color: var(--dark-green);
+  margin-bottom: 6px;
 }
 
 select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--gold);
+  padding: 10px 2px;
+  border: 1px solid var(--gold-accent);
   border-radius: 8px;
   text-align: center;
-  margin-top: 5px;
+  font-size: 1rem;
 }
 
-/* زر */
 .btn {
-  background: var(--green);
+  background-color: var(--dark-green);
   color: white;
   border: none;
-  padding: 12px;
-  width: 100%;
   border-radius: 8px;
-  margin-top: 15px;
+  padding: 12px;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
-/* النتيجة */
-.result {
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #e6f4ea;
-  color: #1b5e20;
-  border: 1px solid #81c784;
-  display: none;
-}
+.divider { height: 2px; background-color: #eee; margin: 25px 0; }
 
-/* الفوتر */
-.footer {
-  text-align: center;
-  color: var(--green);
-  font-size: 13px;
-  margin-top: 10px;
+.section-title { color: var(--dark-green); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
+
+.instruction-tag {
+  background-color: #e8f5e9;
+  color: var(--dark-green);
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: bold;
+  display: inline-block;
+  margin-bottom: 15px;
 }
-</style>
 
+.result-box {
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  font-weight: bold;
+  display: none;
+  line-height: 1.8;
+}
+
+.stage-highlight {
+  background-color: var(--dark-green);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 1.2rem;
+  border-bottom: 4px solid var(--gold-accent);
+}
+
+.footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
+</style>
 </head>
 
 <body>
 
 <div class="card">
   <h2>محول التاريخ (هجري إلى ميلادي)</h2>
+  <div class="input-grid">
+    <div class="input-group"><label>اليوم</label><select id="hDay"></select></div>
+    <div class="input-group"><label>الشهر</label><select id="hMonth"></select></div>
+    <div class="input-group"><label>السنة</label><select id="hYear"></select></div>
+  </div>
+  <button class="btn" onclick="convertDate()">تحويل</button>
+  <button class="btn" onclick="setCurrentDate()" style="background: #f1f3f4; color: #333; border: 1px solid #ccc;">تاريخ اليوم</button>
+  <div id="convResult" class="result-box"></div>
 
-  <div class="input-row">
-    <div class="field">
-      <label>اليوم</label>
-      <select id="day"></select>
-    </div>
+  <div class="divider"></div>
 
-    <div class="field">
-      <label>الشهر</label>
-      <select id="month" onchange="updateDays()"></select>
-    </div>
+  <div class="section-title">حساب عمر الطالب والصف المستحق</div>
+  <div class="instruction-tag">📅 تاريخ ميلاد الطالب بالميلادي</div>
 
-    <div class="field">
-      <label>السنة</label>
-      <select id="year"></select>
-    </div>
+  <div class="input-grid">
+    <div class="input-group"><label>اليوم</label><select id="gDay"></select></div>
+    <div class="input-group"><label>الشهر</label><select id="gMonth"></select></div>
+    <div class="input-group"><label>السنة</label><select id="gYear"></select></div>
   </div>
 
-  <button class="btn" onclick="convert()">تحويل</button>
-
-  <div id="result" class="result"></div>
-
-  <button class="btn" onclick="calcAge()">حساب العمر</button>
-
-  <div id="age" class="result"></div>
+  <button class="btn" onclick="calculateAgeAndStage()" style="background-color: var(--gold-accent); color: var(--dark-green);">إحسب العمر والمرحلة</button>
+  
+  <div id="ageResult" class="result-box" style="background-color: #fdfaf2; border-color: var(--gold-accent); color: var(--dark-green);">
+    <div id="ageText"></div>
+    <div id="stageText" class="stage-highlight"></div>
+  </div>
 </div>
 
 <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
@@ -134,69 +152,77 @@ select {
 <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.js"></script>
 
 <script>
-const gMonths = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-const hMonths = ["1- محرم","2- صفر","3- ربيع الأول","4- ربيع الثاني","5- جمادى الأولى","6- جمادى الآخرة","7- رجب","8- شعبان","9- رمضان","10- شوال","11- ذو القعدة","12- ذو الحجة"];
+const mNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+const hNames = ["1- محرم", "2- صفر", "3- ربيع الأول", "4- ربيع الثاني", "5- جمادى الأول", "6- جمادى الآخر", "7- رجب", "8- شعبان", "9- رمضان", "10- شوال", "11- ذو القعدة", "12- ذو الحجة"];
 
-function init(){
-  let day = document.getElementById("day");
-  let month = document.getElementById("month");
-  let year = document.getElementById("year");
+function init() {
+    const hd = document.getElementById('hDay'), hm = document.getElementById('hMonth'), hy = document.getElementById('hYear');
+    for(let i=1; i<=30; i++) hd.add(new Option(i, i));
+    hNames.forEach((n, i) => hm.add(new Option(n, i+1)));
+    for(let i=1460; i>=1380; i--) hy.add(new Option(i, i));
+    hy.value = 1442; hm.value = 9; hd.value = 7;
 
-  hMonths.forEach((m,i)=> month.add(new Option(m,i+1)));
-
-  for(let i=1450;i>=1400;i--){
-    year.add(new Option(i,i));
-  }
-
-  month.value = 1;
-  updateDays();
-  day.value = 1;
+    const gd = document.getElementById('gDay'), gm = document.getElementById('gMonth'), gy = document.getElementById('gYear');
+    for(let i=1; i<=31; i++) gd.add(new Option(i, i));
+    mNames.forEach((n, i) => gm.add(new Option(`${i+1}- ${n}`, i+1)));
+    for(let i=2026; i>=2000; i--) gy.add(new Option(i, i));
+    gy.value = 2020;
 }
 
-function updateDays(){
-  let m = document.getElementById("month").value;
-  let day = document.getElementById("day");
-
-  day.innerHTML = "";
-
-  let max = (m % 2 == 1) ? 30 : 29;
-
-  for(let i=1;i<=max;i++){
-    day.add(new Option(i,i));
-  }
+function setCurrentDate() {
+    const now = moment();
+    document.getElementById('hYear').value = now.iYear();
+    document.getElementById('hMonth').value = now.iMonth() + 1;
+    document.getElementById('hDay').value = now.iDate();
 }
 
-function convert(){
-  let d = document.getElementById("day").value;
-  let m = document.getElementById("month").value;
-  let y = document.getElementById("year").value;
-
-  let res = document.getElementById("result");
-
-  let date = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
-
-  if(date.isValid()){
-    res.innerHTML = `✅ التاريخ الميلادي: ${date.date()} ${gMonths[date.month()]} ${date.year()}`;
-    res.style.display = "block";
-  }
+function convertDate() {
+    const d = document.getElementById('hDay').value, m = document.getElementById('hMonth').value, y = document.getElementById('hYear').value;
+    const res = document.getElementById('convResult');
+    const date = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
+    if(date.isValid()){
+        res.innerHTML = `✅ يوافق بالميلادي: <br> ${date.date()} ${mNames[date.month()]} ${date.year()}م`;
+        res.style.display = 'block';
+    }
 }
 
-function calcAge(){
-  let d = document.getElementById("day").value;
-  let m = document.getElementById("month").value;
-  let y = document.getElementById("year").value;
+function calculateAgeAndStage() {
+    const d = parseInt(document.getElementById('gDay').value);
+    const m = parseInt(document.getElementById('gMonth').value);
+    const y = parseInt(document.getElementById('gYear').value);
+    
+    const birthDate = moment([y, m - 1, d]);
+    const targetDate = moment([2026, 7, 24]); // 24 أغسطس 2026
 
-  let res = document.getElementById("age");
+    if(!birthDate.isValid()) return;
 
-  let birth = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
-  let now = moment();
+    const diff = moment.duration(targetDate.diff(birthDate));
+    const years = diff.years();
+    const months = diff.months();
 
-  let years = now.diff(birth,'years');
-  let months = now.diff(birth.add(years,'years'),'months');
-  let days = now.diff(birth.add(months,'months'),'days');
+    document.getElementById('ageText').innerHTML = `عمر الطالب في 24-08-2026م هو:<br>${years} سنة و ${months} شهر و ${diff.days()} يوم`;
+    document.getElementById('stageText').innerText = `المرحلة: ${getStage(years, months)}`;
+    document.getElementById('ageResult').style.display = 'block';
+}
 
-  res.innerHTML = `🎂 العمر: ${years} سنة - ${months} شهر - ${days} يوم`;
-  res.style.display = "block";
+function getStage(y, m) {
+    const totalMonths = y * 12 + m;
+    if (totalMonths < 36) return "دون سن الحضانة";
+    if (totalMonths < 48) return "روضة - مستوى أول";
+    if (totalMonths < 60) return "روضة - مستوى ثاني";
+    if (totalMonths < 72) return "تمهيدي - مستوى ثالث";
+    if (totalMonths < 84) return "الصف الأول الابتدائي";
+    if (totalMonths < 96) return "الصف الثاني الابتدائي";
+    if (totalMonths < 108) return "الصف الثالث الابتدائي";
+    if (totalMonths < 120) return "الصف الرابع الابتدائي";
+    if (totalMonths < 132) return "الصف الخامس الابتدائي";
+    if (totalMonths < 144) return "الصف السادس الابتدائي";
+    if (totalMonths < 156) return "الصف الأول المتوسط";
+    if (totalMonths < 168) return "الصف الثاني المتوسط";
+    if (totalMonths < 180) return "الصف الثالث المتوسط";
+    if (totalMonths < 192) return "الصف الأول الثانوي";
+    if (totalMonths < 204) return "الصف الثاني الثانوي";
+    return "الصف الثالث الثانوي أو أعلى";
 }
 
 window.onload = init;
