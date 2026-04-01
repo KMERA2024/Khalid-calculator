@@ -8,7 +8,7 @@
 :root {
   --dark-green: #004d40;
   --gold-accent: #c2ac7f;
-  --light-gold: #e6d5b3; /* لون ذهبي فاتح للأزرار */
+  --light-gold: #e6d5b3; 
   --light-bg: #f2f5f7;
   --white: #ffffff;
 }
@@ -21,8 +21,6 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
 
 .btn { background-color: var(--dark-green); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.3s; }
 .btn:hover { opacity: 0.9; }
-
-/* تنسيق زر تاريخ اليوم باللون الذهبي الفاتح */
 .btn-today { background-color: var(--light-gold); color: var(--dark-green); border: 1px solid var(--gold-accent); }
 
 .divider { height: 2px; background-color: #eee; margin: 25px 0; }
@@ -31,8 +29,7 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
 
 .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; background-color: #fdfaf2; color: var(--dark-green); border: 1px solid var(--gold-accent); font-weight: bold; display: none; line-height: 1.8; }
 
-/* تنسيق النتيجة والمرحلة باللون الأبيض */
-.stage-highlight { background-color: var(--dark-green); color: white; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 1.15rem; border-bottom: 4px solid var(--gold-accent); }
+.stage-highlight { background-color: var(--dark-green); color: white; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 1.2rem; border-bottom: 4px solid var(--gold-accent); }
 .note-white { color: white; font-size: 0.85rem; display: block; margin-top: 5px; font-weight: normal; opacity: 0.9; }
 
 .footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
@@ -92,7 +89,7 @@ function init() {
     const gd = document.getElementById('gDay'), gm = document.getElementById('gMonth'), gy = document.getElementById('gYear');
     for(let i=1; i<=31; i++) gd.add(new Option(i, i));
     mNames.forEach((n, i) => gm.add(new Option(`${i+1}- ${n}`, i+1)));
-    for(let i=2026; i>=2000; i--) gy.add(new Option(i, i));
+    for(let i=2026; i>=1980; i--) gy.add(new Option(i, i));
     gy.value = 2020;
 }
 
@@ -146,23 +143,30 @@ function getStageByDate(birthDate, years) {
     const d2022_08_25 = moment("2022-08-25", "YYYY-MM-DD");
     const d2023_08_24 = moment("2023-08-24", "YYYY-MM-DD");
 
+    // منطق التعليم المستمر والأعمار الكبيرة
+    if (years > 21) return { stage: "الصف المستحق: تعليم مستمر", note: "" };
+    
+    if (years >= 12) {
+        if (years == 12) return { stage: "الصف الأول المتوسط", note: "" };
+        if (years == 13) return { stage: "الصف الثاني المتوسط", note: "" };
+        if (years == 14) return { stage: "الصف الثالث المتوسط", note: "" };
+        if (years == 15) return { stage: "الصف الأول الثانوي", note: "" };
+        if (years == 16) return { stage: "الصف الثاني الثانوي", note: "" };
+        if (years >= 17 && years <= 21) return { stage: "الصف الثالث الثانوي", note: "" };
+    }
+
+    // منطق الطفولة المبكرة والابتدائي حسب الصورة السابقة
     if (birthDate.isSameOrBefore(d2020_08_24)) {
-        if (years >= 7) {
-            if (years == 7) return { stage: "الصف الثاني الابتدائي", note: "" };
-            if (years == 8) return { stage: "الصف الثالث الابتدائي", note: "" };
-            if (years == 9) return { stage: "الصف الرابع الابتدائي", note: "" };
-            if (years == 10) return { stage: "الصف الخامس الابتدائي", note: "" };
-            if (years == 11) return { stage: "الصف السادس الابتدائي", note: "" };
-            if (years >= 12) return { stage: "المرحلة المتوسطة / الثانوية", note: "" };
-        }
-        return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات" };
+        if (years == 6) return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات" };
+        if (years == 7) return { stage: "الصف الثاني الابتدائي", note: "" };
+        if (years == 8) return { stage: "الصف الثالث الابتدائي", note: "" };
+        if (years == 9) return { stage: "الصف الرابع الابتدائي", note: "" };
+        if (years == 10) return { stage: "الصف الخامس الابتدائي", note: "" };
+        if (years == 11) return { stage: "الصف السادس الابتدائي", note: "" };
     }
     
     if (birthDate.isBetween(d2020_08_25, d2020_11_22, null, '[]')) {
-        return { 
-            stage: "الفئة الثانية: الصف الأول الابتدائي", 
-            note: "بشرط دراسة سنة كاملة في رياض الأطفال" 
-        };
+        return { stage: "الفئة الثانية: الصف الأول الابتدائي", note: "بشرط دراسة سنة كاملة في رياض الأطفال" };
     }
     
     if (birthDate.isBetween(d2020_08_25, d2021_08_24, null, '[]')) {
@@ -175,7 +179,7 @@ function getStageByDate(birthDate, years) {
         return { stage: "رياض الأطفال - المستوى الأول (KG1)", note: "" };
     }
 
-    return { stage: birthDate.isAfter(d2023_08_24) ? "دون سن القبول" : "مراحل أخرى", note: "" };
+    return { stage: birthDate.isAfter(d2023_08_24) ? "دون سن القبول" : "مراجعة إدارة التسجيل", note: "" };
 }
 
 window.onload = init;
