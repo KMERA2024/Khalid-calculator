@@ -1,36 +1,129 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حاسبة تسجيل الطلاب 1448هـ</title>
+
   <style>
     :root {
       --dark-green: #004d40;
       --gold-accent: #c2ac7f;
       --white: #ffffff;
     }
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f3f4; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-    .card { background: var(--white); padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; border-top: 6px solid var(--dark-green); margin-bottom: 20px; }
-    h2 { color: var(--dark-green); font-size: 1.1rem; margin-bottom: 15px; }
-    .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-    label { font-size: 0.75rem; font-weight: bold; color: var(--dark-green); display: block; margin-bottom: 4px; }
-    select { width: 100%; padding: 8px; border: 1px solid var(--gold-accent); border-radius: 6px; text-align: center; }
-    .btn { background: var(--dark-green); color: white; border: none; padding: 10px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
-    .result-box { margin-top: 15px; padding: 12px; border-radius: 8px; background-color: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; font-weight: bold; display: none; }
-    .footer { font-size: 0.8rem; color: var(--dark-green); font-weight: bold; margin-top: 10px; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg, #e0f2f1, #f1f3f4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      border-top: 6px solid var(--dark-green);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: var(--dark-green);
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--dark-green);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--gold-accent);
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .btn {
+      background: var(--dark-green);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .btn:hover {
+      background: #00695c;
+    }
+
+    .result-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #e8f5e9;
+      border: 1px solid #4caf50;
+      color: #2e7d32;
+      font-weight: bold;
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      color: var(--dark-green);
+      font-weight: bold;
+      margin-top: 10px;
+    }
   </style>
 </head>
+
 <body>
 
 <div class="card">
   <h2>محول التاريخ (هجري إلى ميلادي)</h2>
+
   <div class="input-row">
-    <div><label>اليوم</label><select id="hDay"></select></div>
-    <div><label>الشهر</label><select id="hMonth"></select></div>
-    <div><label>السنة</label><select id="hYear"></select></div>
+    <div>
+      <label>اليوم</label>
+      <select id="hDay"></select>
+    </div>
+
+    <div>
+      <label>الشهر</label>
+      <select id="hMonth" onchange="updateDays()"></select>
+    </div>
+
+    <div>
+      <label>السنة</label>
+      <select id="hYear"></select>
+    </div>
   </div>
+
   <button class="btn" onclick="convertNow()">تحويل</button>
+  <button class="btn" onclick="setToday()">تاريخ اليوم</button>
+
   <div id="resShow" class="result-box"></div>
 </div>
 
@@ -40,44 +133,70 @@
 <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.js"></script>
 
 <script>
-  const gMonthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-  const hMonthsNames = ["1- محرم", "2- صفر", "3- ربيع الأول", "4- ربيع الثاني", "5- جمادى الأول", "6- جمادى الآخر", "7- رجب", "8- شعبان", "9- رمضان", "10- شوال", "11- ذو القعدة", "12- ذو الحجة"];
+  const gMonthsNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  const hMonthsNames = ["1- محرم","2- صفر","3- ربيع الأول","4- ربيع الثاني","5- جمادى الأول","6- جمادى الآخر","7- رجب","8- شعبان","9- رمضان","10- شوال","11- ذو القعدة","12- ذو الحجة"];
 
-  // تعبئة القوائم المنسدلة
   function setup() {
-    const d = document.getElementById('hDay'), m = document.getElementById('hMonth'), y = document.getElementById('hYear');
-    for(let i=1; i<=30; i++) d.options.add(new Option(i, i));
+    const d = document.getElementById('hDay');
+    const m = document.getElementById('hMonth');
+    const y = document.getElementById('hYear');
+
     hMonthsNames.forEach((name, i) => m.options.add(new Option(name, i + 1)));
-    for(let i=1450; i>=1400; i--) y.options.add(new Option(i, i));
-    
-    // ضبط القيم الافتراضية كما في صورتك (6 رمضان 1442)
-    d.value = 6; m.value = 9; y.value = 1442;
+
+    for(let i=1450; i>=1400; i--) {
+      y.options.add(new Option(i, i));
+    }
+
+    m.value = 9;
+    y.value = 1442;
+
+    updateDays();
+    d.value = 6;
+  }
+
+  function updateDays() {
+    const m = document.getElementById('hMonth').value;
+    const d = document.getElementById('hDay');
+
+    d.innerHTML = "";
+
+    let maxDays = (m % 2 === 1) ? 30 : 29;
+
+    for(let i=1; i<=maxDays; i++) {
+      d.options.add(new Option(i, i));
+    }
   }
 
   function convertNow() {
-    const d = document.getElementById('hDay').value;
-    const m = document.getElementById('hMonth').value;
-    const y = document.getElementById('hYear').value;
+    const d = +document.getElementById('hDay').value;
+    const m = +document.getElementById('hMonth').value;
+    const y = +document.getElementById('hYear').value;
     const display = document.getElementById('resShow');
 
-    // تنفيذ التحويل الفعلي
     const mDate = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
 
     if(mDate.isValid()){
-        const dayG = mDate.date(); // اليوم الميلادي
-        const monthG = gMonthsNames[mDate.month()]; // اسم الشهر الميلادي الحقيقي
-        const yearG = mDate.year(); // السنة الميلادية الحقيقية (ستعطيك 2021)
+      const dayG = mDate.date();
+      const monthG = gMonthsNames[mDate.month()];
+      const yearG = mDate.year();
 
-        display.innerHTML = `✅ التاريخ الميلادي: ${dayG} ${monthG} ${yearG}م`;
-        display.style.display = 'block';
-        display.style.backgroundColor = '#e8f5e9';
-        display.style.color = '#2e7d32';
+      display.innerHTML = `✅ التاريخ الميلادي: ${dayG} ${monthG} ${yearG}م<br><small>※ قد يختلف يوم حسب التقويم الرسمي</small>`;
+      display.style.display = 'block';
     } else {
-        display.innerHTML = "⚠️ التاريخ الهجري غير صحيح لهذا الشهر";
-        display.style.display = 'block';
-        display.style.backgroundColor = '#ffebee';
-        display.style.color = '#c62828';
+      display.innerHTML = "⚠️ التاريخ غير صحيح";
+      display.style.display = 'block';
+      display.style.backgroundColor = '#ffebee';
+      display.style.color = '#c62828';
     }
+  }
+
+  function setToday(){
+    const today = moment();
+    const display = document.getElementById('resShow');
+
+    display.innerHTML =
+      `📅 اليوم: ${today.date()} ${gMonthsNames[today.month()]} ${today.year()}م`;
+    display.style.display = 'block';
   }
 
   window.onload = setup;
