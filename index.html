@@ -8,102 +8,79 @@
     :root {
       --dark-green: #004d40;
       --gold-accent: #c2ac7f;
-      --light-gold: #fdfaf2;
       --white: #ffffff;
-      --success-bg: #e8f5e9;
-      --success-text: #2e7d32;
     }
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f3f4; display: flex; justify-content: center; padding: 20px; }
-    .card { background: var(--white); padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; border-top: 8px solid var(--dark-green); }
-    h2 { color: var(--dark-green); margin-bottom: 20px; font-size: 1.2rem; }
-    .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    label { display: block; font-size: 0.8rem; font-weight: bold; color: var(--dark-green); margin-bottom: 5px; }
-    select { width: 100%; padding: 10px; border: 1px solid var(--gold-accent); border-radius: 8px; background: var(--white); text-align: center; font-size: 0.9rem; }
-    .btn-convert { background: var(--dark-green); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: bold; width: 100%; transition: 0.3s; }
-    .btn-convert:hover { background: #00332c; }
-    .result-area { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-size: 1.1rem; border: 1px solid #c8e6c9; line-height: 1.6; }
-    .result-success { display: block !important; background-color: var(--success-bg); color: var(--success-text); }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f3f4; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+    .card { background: var(--white); padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; border-top: 6px solid var(--dark-green); margin-bottom: 20px; }
+    h2 { color: var(--dark-green); font-size: 1.1rem; margin-bottom: 15px; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+    label { font-size: 0.75rem; font-weight: bold; color: var(--dark-green); display: block; margin-bottom: 4px; }
+    select { width: 100%; padding: 8px; border: 1px solid var(--gold-accent); border-radius: 6px; text-align: center; }
+    .btn { background: var(--dark-green); color: white; border: none; padding: 10px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+    .result-box { margin-top: 15px; padding: 12px; border-radius: 8px; background-color: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; font-weight: bold; display: none; }
+    .footer { font-size: 0.8rem; color: var(--dark-green); font-weight: bold; margin-top: 10px; }
   </style>
 </head>
 <body>
 
 <div class="card">
   <h2>محول التاريخ (هجري إلى ميلادي)</h2>
-  
-  <div class="input-grid">
-    <div>
-      <label>اليوم</label>
-      <select id="hDay"></select>
-    </div>
-    <div>
-      <label>الشهر</label>
-      <select id="hMonth"></select>
-    </div>
-    <div>
-      <label>السنة</label>
-      <select id="hYear"></select>
-    </div>
+  <div class="input-row">
+    <div><label>اليوم</label><select id="hDay"></select></div>
+    <div><label>الشهر</label><select id="hMonth"></select></div>
+    <div><label>السنة</label><select id="hYear"></select></div>
   </div>
-
-  <button class="btn-convert" onclick="convertDate()">تحويل</button>
-
-  <div id="result" class="result-area"></div>
+  <button class="btn" onclick="convertNow()">تحويل</button>
+  <div id="resShow" class="result-box"></div>
 </div>
+
+<div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.js"></script>
 
 <script>
-  const gMonths = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  const gMonthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
   const hMonthsNames = ["1- محرم", "2- صفر", "3- ربيع الأول", "4- ربيع الثاني", "5- جمادى الأول", "6- جمادى الآخر", "7- رجب", "8- شعبان", "9- رمضان", "10- شوال", "11- ذو القعدة", "12- ذو الحجة"];
 
-  function init() {
-    const dSel = document.getElementById('hDay');
-    const mSel = document.getElementById('hMonth');
-    const ySel = document.getElementById('hYear');
-
-    for(let i=1; i<=30; i++) dSel.options.add(new Option(i, i));
-    hMonthsNames.forEach((name, i) => mSel.options.add(new Option(name, i + 1)));
-    for(let i=1450; i>=1400; i--) ySel.options.add(new Option(i, i));
+  // تعبئة القوائم المنسدلة
+  function setup() {
+    const d = document.getElementById('hDay'), m = document.getElementById('hMonth'), y = document.getElementById('hYear');
+    for(let i=1; i<=30; i++) d.options.add(new Option(i, i));
+    hMonthsNames.forEach((name, i) => m.options.add(new Option(name, i + 1)));
+    for(let i=1450; i>=1400; i--) y.options.add(new Option(i, i));
     
-    // القيم الافتراضية للتجربة (6 رمضان 1442)
-    dSel.value = 6;
-    mSel.value = 9;
-    ySel.value = 1442;
+    // ضبط القيم الافتراضية كما في صورتك (6 رمضان 1442)
+    d.value = 6; m.value = 9; y.value = 1442;
   }
 
-  function convertDate() {
+  function convertNow() {
     const d = document.getElementById('hDay').value;
     const m = document.getElementById('hMonth').value;
     const y = document.getElementById('hYear').value;
-    const resDiv = document.getElementById('result');
+    const display = document.getElementById('resShow');
 
-    try {
-      // السطر الأهم: تحويل الهجري لميلادي حقيقي
-      const mDate = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
-      
-      if (mDate.isValid()) {
-        // استخراج تفاصيل التاريخ الميلادي الفعلي بعد التحويل
-        const dayG = mDate.date(); 
-        const monthG = gMonths[mDate.month()];
-        const yearG = mDate.year(); // هنا سيظهر 2021 وليس 1442
+    // تنفيذ التحويل الفعلي
+    const mDate = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
 
-        resDiv.innerHTML = `✅ التاريخ الميلادي: <br> <b>${dayG} ${monthG} ${yearG}م</b>`;
-        resDiv.className = 'result-area result-success';
-        resDiv.style.display = 'block';
-      } else {
-        throw new Error();
-      }
-    } catch (e) {
-      resDiv.innerHTML = "⚠️ التاريخ غير متوفر في التقويم، جرب يوم 29 أو تأكد من الشهر.";
-      resDiv.className = 'result-area';
-      resDiv.style.display = 'block';
-      resDiv.style.backgroundColor = '#fff3e0';
-      resDiv.style.color = '#e65100';
+    if(mDate.isValid()){
+        const dayG = mDate.date(); // اليوم الميلادي
+        const monthG = gMonthsNames[mDate.month()]; // اسم الشهر الميلادي الحقيقي
+        const yearG = mDate.year(); // السنة الميلادية الحقيقية (ستعطيك 2021)
+
+        display.innerHTML = `✅ التاريخ الميلادي: ${dayG} ${monthG} ${yearG}م`;
+        display.style.display = 'block';
+        display.style.backgroundColor = '#e8f5e9';
+        display.style.color = '#2e7d32';
+    } else {
+        display.innerHTML = "⚠️ التاريخ الهجري غير صحيح لهذا الشهر";
+        display.style.display = 'block';
+        display.style.backgroundColor = '#ffebee';
+        display.style.color = '#c62828';
     }
   }
 
-  window.onload = init;
+  window.onload = setup;
 </script>
 
 </body>
