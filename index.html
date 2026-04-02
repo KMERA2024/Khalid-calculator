@@ -8,7 +8,6 @@
 :root {
   --dark-green: #004d40;
   --gold-accent: #c2ac7f;
-  --light-gold: #e6d5b3; 
   --light-bg: #f2f5f7;
   --white: #ffffff;
 }
@@ -21,7 +20,6 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
 
 .btn { background-color: var(--dark-green); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.3s; }
 .btn:hover { opacity: 0.9; }
-.btn-today { background-color: var(--light-gold); color: var(--dark-green); border: 1px solid var(--gold-accent); }
 
 .divider { height: 2px; background-color: #eee; margin: 25px 0; }
 .section-title { color: var(--dark-green); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
@@ -29,8 +27,10 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
 
 .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; background-color: #fdfaf2; color: var(--dark-green); border: 1px solid var(--gold-accent); font-weight: bold; display: none; line-height: 1.8; }
 
-.stage-highlight { background-color: var(--dark-green); color: white; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 1.2rem; border-bottom: 4px solid var(--gold-accent); }
-.note-white { color: white; font-size: 0.85rem; display: block; margin-top: 5px; font-weight: normal; opacity: 0.9; }
+/* توحيد حجم الخط في المربع الأخضر ليكون كبيراً وواضحاً */
+.stage-highlight { background-color: var(--dark-green); color: white; padding: 15px; border-radius: 8px; margin-top: 10px; border-bottom: 4px solid var(--gold-accent); }
+#stageText { font-size: 1.3rem; display: block; margin-bottom: 5px; }
+#noteText { font-size: 1.3rem; display: block; font-weight: bold; opacity: 1; }
 
 .footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
 </style>
@@ -44,8 +44,7 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
     <div class="input-group"><label>الشهر</label><select id="hMonth"></select></div>
     <div class="input-group"><label>السنة</label><select id="hYear"></select></div>
   </div>
-  <button class="btn" onclick="convertDate()">تحويل</button>
-  <button class="btn btn-today" onclick="setCurrentDate()">تاريخ اليوم</button>
+  <button class="btn" onclick="convertDate()">تحويل التاريخ</button>
   <div id="convResult" class="result-box" style="background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7;"></div>
 
   <div class="divider"></div>
@@ -65,7 +64,7 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
     <div id="ageText"></div>
     <div id="stageContainer" class="stage-highlight">
         <span id="stageText"></span>
-        <span id="noteText" class="note-white"></span>
+        <span id="noteText"></span>
     </div>
   </div>
 </div>
@@ -91,13 +90,6 @@ function init() {
     mNames.forEach((n, i) => gm.add(new Option(`${i+1}- ${n}`, i+1)));
     for(let i=2026; i>=1980; i--) gy.add(new Option(i, i));
     gy.value = 2020;
-}
-
-function setCurrentDate() {
-    const now = moment();
-    document.getElementById('hYear').value = now.iYear();
-    document.getElementById('hMonth').value = now.iMonth() + 1;
-    document.getElementById('hDay').value = now.iDate();
 }
 
 function convertDate() {
@@ -143,8 +135,7 @@ function getStageByDate(birthDate, years) {
     const d2022_08_25 = moment("2022-08-25", "YYYY-MM-DD");
     const d2023_08_24 = moment("2023-08-24", "YYYY-MM-DD");
 
-    // منطق التعليم المستمر والأعمار الكبيرة
-    if (years > 21) return { stage: "الصف المستحق: تعليم مستمر", note: "" };
+    if (years > 21) return { stage: "تعليم مستمر", note: "" };
     
     if (years >= 12) {
         if (years == 12) return { stage: "الصف الأول المتوسط", note: "" };
@@ -152,10 +143,9 @@ function getStageByDate(birthDate, years) {
         if (years == 14) return { stage: "الصف الثالث المتوسط", note: "" };
         if (years == 15) return { stage: "الصف الأول الثانوي", note: "" };
         if (years == 16) return { stage: "الصف الثاني الثانوي", note: "" };
-        if (years >= 17 && years <= 21) return { stage: "الصف الثالث الثانوي", note: "" };
+        if (years >= 17) return { stage: "الصف الثالث الثانوي", note: "" };
     }
 
-    // منطق الطفولة المبكرة والابتدائي حسب الصورة السابقة
     if (birthDate.isSameOrBefore(d2020_08_24)) {
         if (years == 6) return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات" };
         if (years == 7) return { stage: "الصف الثاني الابتدائي", note: "" };
