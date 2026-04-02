@@ -1,281 +1,274 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة أعمار الطلاب - الإصدار المطور 2026</title>
+    <style>
+        :root {
+            --dark-green: #004d40;
+            --gold-accent: #c2ac7f;
+            --light-gold: #fdfaf2;
+            --white: #ffffff;
+            --primary-bg: #f4f7f6;
+        }
 
-<title>حاسبة أعمار الطلاب</title>
+        * { box-sizing: border-box; }
 
-<style>
-:root {
-  --dark-green: #004d40;
-  --gold-accent: #c2ac7f;
-  --light-gold: #fdfaf2;
-  --white: #ffffff;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 10px;
+        }
 
-* { box-sizing: border-box; }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background-color: #f1f3f4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 10px;
-}
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-top: 8px solid var(--dark-green);
+            text-align: center;
+        }
 
-.container {
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
+        h2 { 
+            color: var(--dark-green); 
+            font-size: 1.2rem; 
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
 
-.card {
-  background: var(--white);
-  padding: 1.2rem;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  border-top: 6px solid var(--dark-green);
-  text-align: center;
-}
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-h2 { color: var(--dark-green); font-size: 1.1rem; }
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
 
-.input-row {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
-  gap: 8px;
-}
+        select {
+            width: 100%;
+            padding: 12px 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            background-color: #fff;
+        }
 
-label {
-  font-size: 0.75rem;
-  font-weight: bold;
-  color: var(--dark-green);
-}
+        button {
+            margin-top: 10px;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: transform 0.2s, opacity 0.2s;
+        }
 
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--gold-accent);
-  border-radius: 6px;
-  text-align: center;
-}
+        button:active { transform: scale(0.98); }
 
-button {
-  margin-top: 10px;
-  padding: 10px;
-  width: 140px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
+        .btn-main { background: var(--dark-green); color: white; }
+        .calc-btn { background: var(--gold-accent); color: var(--dark-green); }
 
-.btn-main {
-  background: var(--dark-green);
-  color: white;
-}
+        .result-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--light-gold);
+            border-radius: 8px;
+            border: 1px dashed var(--gold-accent);
+            font-weight: bold;
+            color: #444;
+        }
 
-.calc-btn {
-  background: var(--gold-accent);
-  color: var(--dark-green);
-}
+        .stage {
+            margin-top: 15px;
+            padding: 18px;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.5s ease;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            display: none; /* يظهر عند الحساب فقط */
+        }
 
-.result-box {
-  margin-top: 10px;
-  padding: 10px;
-  background: var(--light-gold);
-  border-radius: 8px;
-  border: 1px solid var(--gold-accent);
-}
-
-.stage {
-  margin-top: 10px;
-  padding: 15px;
-  background: var(--dark-green);
-  color: white;
-  border-radius: 8px;
-}
-
-.footer {
-  margin-top: 10px;
-  font-weight: bold;
-  color: var(--dark-green);
-}
-</style>
+        .footer {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--dark-green);
+            text-align: center;
+        }
+        
+        .email { font-size: 0.8rem; color: #666; margin-top: 2px; }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
 
-  <!-- محول التاريخ -->
-  <div class="card">
-    <h2>محول التاريخ (الهجري إلى الميلادي)</h2>
-
-    <div class="input-row">
-      <div>
-        <label>اليوم</label>
-        <select id="hDay"></select>
-      </div>
-      <div>
-        <label>الشهر</label>
-        <select id="hMonth"></select>
-      </div>
-      <div>
-        <label>السنة</label>
-        <select id="hYear"></select>
-      </div>
+    <div class="card">
+        <h2>🔄 محول التاريخ (هجري ➔ ميلادي)</h2>
+        <div class="input-row">
+            <div><label>اليوم</label><select id="hDay"></select></div>
+            <div><label>الشهر</label><select id="hMonth"></select></div>
+            <div><label>السنة</label><select id="hYear"></select></div>
+        </div>
+        <button class="btn-main" onclick="convertHijri()">تحويل التاريخ</button>
+        <div id="hResult" class="result-box" style="display:none;"></div>
     </div>
 
-    <button class="btn-main" onclick="convertHijri()">تحويل</button>
+    <div class="card">
+        <h2>🎓 حاسبة أعمار الطلاب (2026)</h2>
+        <div class="input-row">
+            <div><label>اليوم</label><select id="gDay"></select></div>
+            <div><label>الشهر</label><select id="gMonth"></select></div>
+            <div><label>السنة</label><select id="gYear"></select></div>
+        </div>
+        <button class="calc-btn" onclick="calculate()">احسب عمر الطالب والمرحلة</button>
 
-    <div id="hResult" class="result-box" style="display:none;"></div>
-  </div>
-
-
-  <!-- حاسبة العمر -->
-  <div class="card">
-    <h2>حاسبة أعمار الطلاب</h2>
-
-    <div class="input-row">
-      <div>
-        <label>اليوم</label>
-        <select id="gDay"></select>
-      </div>
-      <div>
-        <label>الشهر</label>
-        <select id="gMonth"></select>
-      </div>
-      <div>
-        <label>السنة</label>
-        <select id="gYear"></select>
-      </div>
+        <div id="resultContainer" style="display:none;">
+            <div class="result-box">
+                العمر في بداية العام الدراسي:<br>
+                <span id="ageText"></span>
+            </div>
+            <div class="stage" id="stageDisplay"></div>
+        </div>
     </div>
 
-    <button class="calc-btn" onclick="calculate()">احسب عمر الطالب</button>
-
-    <div id="result" style="display:none;">
-      <div class="result-box">
-        العمر:
-        <div id="age"></div>
-      </div>
-
-      <div class="stage" id="stage"></div>
-    </div>
-  </div>
-
-  <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
-  <div class="footer">allihaibi@gmail.com</div>
+    <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
+    <div class="footer email">allihaibi@gmail.com</div>
 
 </div>
 
-<!-- مكتبات التحويل -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.js"></script>
 
 <script>
+// تعبئة القوائم المنسدلة عند التحميل
+window.onload = function() {
+    const hDay = document.getElementById('hDay');
+    const hMonth = document.getElementById('hMonth');
+    const hYear = document.getElementById('hYear');
+    const gDay = document.getElementById('gDay');
+    const gMonth = document.getElementById('gMonth');
+    const gYear = document.getElementById('gYear');
 
-// تعبئة القوائم
-for(let i=1;i<=30;i++) hDay.innerHTML += `<option>${i}</option>`;
-for(let i=1;i<=12;i++) hMonth.innerHTML += `<option>${i}</option>`;
-for(let i=1460;i>=1400;i--) hYear.innerHTML += `<option>${i}</option>`;
+    for(let i=1;i<=30;i++) hDay.innerHTML += `<option value="${i}">${i}</option>`;
+    for(let i=1;i<=12;i++) hMonth.innerHTML += `<option value="${i}">${i}</option>`;
+    for(let i=1460;i>=1400;i--) hYear.innerHTML += `<option value="${i}">${i}</option>`;
 
-for(let i=1;i<=31;i++) gDay.innerHTML += `<option>${i}</option>`;
-for(let i=1;i<=12;i++) gMonth.innerHTML += `<option>${i}</option>`;
-for(let i=2026;i>=2005;i--) gYear.innerHTML += `<option>${i}</option>`;
+    for(let i=1;i<=31;i++) gDay.innerHTML += `<option value="${i}">${i}</option>`;
+    for(let i=1;i<=12;i++) gMonth.innerHTML += `<option value="${i}">${i}</option>`;
+    // تم تمديد السنوات لتشمل المرحلة الثانوية (مواليد 2008 وما بعدها)
+    for(let i=2026;i>=2008;i--) gYear.innerHTML += `<option value="${i}">${i}</option>`;
+};
 
-// تحويل الناريخ الهجري إلى الميلادي
 function convertHijri(){
-  const d = hDay.value;
-  const m = hMonth.value;
-  const y = hYear.value;
+    const d = document.getElementById("hDay").value;
+    const m = document.getElementById("hMonth").value;
+    const y = document.getElementById("hYear").value;
+    const resultBox = document.getElementById("hResult");
 
-  const resultBox = document.getElementById("hResult");
+    const date = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
 
-  const date = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
-
-  if(date.isValid()){
-    resultBox.style.display = "block";
-    resultBox.innerText =
-      "التاريخ الميلادي: " +
-      date.date() + "/" +
-      (date.month()+1) + "/" +
-      date.year();
-  } else {
-    resultBox.style.display = "block";
-    resultBox.innerText = "⚠️ تاريخ غير صحيح";
-  }
+    if(date.isValid()){
+        resultBox.style.display = "block";
+        resultBox.innerHTML = "التاريخ الميلادي المقابل: <br>" + date.format('YYYY / MM / DD');
+    } else {
+        resultBox.style.display = "block";
+        resultBox.innerText = "⚠️ عذراً، التاريخ غير صحيح";
+    }
 }
 
-// حساب العمر
 function calculate(){
+    const d = parseInt(document.getElementById("gDay").value);
+    const m = parseInt(document.getElementById("gMonth").value);
+    const y = parseInt(document.getElementById("gYear").value);
 
-  const d = parseInt(gDay.value);
-  const m = parseInt(gMonth.value);
-  const y = parseInt(gYear.value);
+    const birth = new Date(y, m-1, d);
+    const target = new Date(2026, 7, 24); // تاريخ بداية العام الدراسي المعتمد 2026
 
-  const birth = new Date(y, m-1, d);
-  const target = new Date(2026,7,24);
+    let years = target.getFullYear() - birth.getFullYear();
+    let months = target.getMonth() - birth.getMonth();
+    let days = target.getDate() - birth.getDate();
 
-  if(isNaN(birth)){
-    alert("تاريخ غير صحيح");
-    return;
-  }
+    if(days < 0){
+        months--;
+        days += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
+    }
+    if(months < 0){
+        years--;
+        months += 12;
+    }
 
-  let years = target.getFullYear() - birth.getFullYear();
-  let months = target.getMonth() - birth.getMonth();
-  let days = target.getDate() - birth.getDate();
+    // إظهار النتائج
+    document.getElementById("resultContainer").style.display = "block";
+    document.getElementById("ageText").innerText = `${years} سنة و ${months} شهر و ${days} يوم`;
 
-  if(days < 0){
-    months--;
-    days += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
-  }
+    const stageDisplay = document.getElementById("stageDisplay");
+    stageDisplay.style.display = "block";
+    
+    let stageTitle = "";
+    let bgColor = "";
 
-  if(months < 0){
-    years--;
-    months += 12;
-  }
+    // منطق تحديد المراحل والألوان
+    if (y <= 2010 && y >= 2008) {
+        stageTitle = "المرحلة الثانوية 🎓";
+        bgColor = "#b8860b"; // ذهبي للمرحلة الثانوية
+    } 
+    else if (y <= 2013 && y >= 2011) {
+        stageTitle = "المرحلة المتوسطة 📘";
+        bgColor = "#1565c0"; // أزرق للمرحلة المتوسطة
+    } 
+    else if (y <= 2019 && y >= 2014) {
+        // تفصيل أدق للمرحلة الابتدائية والروضة بناءً على الشهور لعام 2026
+        if (birth <= new Date(2020, 7, 24)) {
+            stageTitle = "المرحلة الابتدائية 📗";
+            bgColor = "#2e7d32"; // أخضر للابتدائية
+        } else if (birth <= new Date(2020, 10, 22)) {
+            stageTitle = "أول ابتدائي (بشرط الروضة) 🏫";
+            bgColor = "#2e7d32";
+        } else {
+            stageTitle = "مرحلة رياض الأطفال 🎈";
+            bgColor = "#ad1457"; // وردي للروضة
+        }
+    } 
+    else if (birth <= new Date(2023, 7, 24)) {
+        stageTitle = "مرحلة رياض الأطفال 🎈";
+        bgColor = "#ad1457";
+    }
+    else {
+        stageTitle = "دون سن القبول النظامي 👶";
+        bgColor = "#546e7a"; // رمادي
+    }
 
-  document.getElementById("result").style.display = "block";
-  document.getElementById("age").innerText =
-    years + " سنة - " + months + " شهر - " + days + " يوم";
-
-  let stageText = "";
-
-  const c1 = new Date(2020,7,24);
-  const c2 = new Date(2020,10,22);
-  const kg3 = new Date(2021,7,24);
-  const kg2 = new Date(2022,7,24);
-  const kg1 = new Date(2023,7,24);
-
-  if(birth <= c1){
-    stageText = "الصف الأول الابتدائي";
-  }
-  else if(birth <= c2){
-    stageText = "الصف الأول الابتدائي (الفئة الثانية بشرط الروضة)";
-  }
-  else if(birth <= kg3){
-    stageText = "رياض أطفال مستوى ثالث";
-  }
-  else if(birth <= kg2){
-    stageText = "رياض أطفال مستوى ثاني";
-  }
-  else if(birth <= kg1){
-    stageText = "رياض أطفال مستوى أول";
-  }
-  else{
-    stageText = "دون سن القبول";
-  }
-
-  document.getElementById("stage").innerText = stageText;
+    stageDisplay.innerText = stageTitle;
+    stageDisplay.style.backgroundColor = bgColor;
 }
-
 </script>
 
 </body>
