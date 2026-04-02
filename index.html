@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة اعمار الطلاب المستجدين للعام الدراسي 2026</title>
+    <title>حاسبة القبول الدراسي المعتمدة 2026</title>
     <style>
         :root {
             --dark-green: #004d40;
@@ -42,7 +42,7 @@
 
 <div class="container">
     <div class="card">
-        <h2>محول التاريخ الهجري</h2>
+        <h2>🔄 محول التاريخ الهجري</h2>
         <div class="input-row">
             <div><label>اليوم</label><select id="hDay"></select></div>
             <div><label>الشهر الهجري</label><select id="hMonth"></select></div>
@@ -53,7 +53,7 @@
     </div>
 
     <div class="card">
-        <h2>حاسبة القبول الدراسي لعام 2026</h2>
+        <h2>🎓 حاسبة القبول الدراسي لعام 2026</h2>
         <div class="input-row">
             <div><label>اليوم</label><select id="gDay"></select></div>
             <div><label>الشهر الميلادي</label><select id="gMonth"></select></div>
@@ -61,7 +61,7 @@
         </div>
         <button class="calc-btn" onclick="calculate()">احسب العمر والمرحلة</button>
         <div id="resultArea" style="display:none;">
-            <div class="result-box">العمر: <div class="age-display" id="ageOutput"></div></div>
+            <div class="result-box">العمر التفصيلي: <div class="age-display" id="ageOutput"></div></div>
             <div class="stage" id="stageOutput"></div>
         </div>
     </div>
@@ -73,14 +73,14 @@
 
 <script>
 const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
-const gregorianMonths = ["يناير (Jan)", "فبراير (Feb)", "مارس (Mar)", "أبريل (Apr)", "مايو (May)", "يونيو (Jun)", "يوليو (Jul)", "أغسطس (Aug)", "سبتمبر (Sep)", "أكتوبر (Oct)", "نوفمبر (Nov)", "ديسمبر (Dec)"];
+const gregorianMonths = ["1- يناير (Jan)", "2- فبراير (Feb)", "3- مارس (Mar)", "4- أبريل (Apr)", "5- مايو (May)", "6- يونيو (Jun)", "7- يوليو (Jul)", "8- أغسطس (Aug)", "9- سبتمبر (Sep)", "10- أكتوبر (Oct)", "11- نوفمبر (Nov)", "12- ديسمبر (Dec)"];
 
 window.onload = function() {
     for(let i=1;i<=30;i++) document.getElementById('hDay').innerHTML += `<option value="${i}">${i}</option>`;
     hijriMonths.forEach((m, i) => document.getElementById('hMonth').innerHTML += `<option value="${i+1}">${i+1} - ${m}</option>`);
     for(let i=1460;i>=1390;i--) document.getElementById('hYear').innerHTML += `<option value="${i}">${i}</option>`;
     for(let i=1;i<=31;i++) document.getElementById('gDay').innerHTML += `<option value="${i}">${i}</option>`;
-    gregorianMonths.forEach((m, i) => document.getElementById('gMonth').innerHTML += `<option value="${i+1}">${i+1} - ${m}</option>`);
+    gregorianMonths.forEach((m, i) => document.getElementById('gMonth').innerHTML += `<option value="${i+1}">${m}</option>`);
     for(let i=2026;i>=1995;i--) document.getElementById('gYear').innerHTML += `<option value="${i}">${i}</option>`;
 };
 
@@ -105,16 +105,26 @@ function calculate(){
     stageOut.style.display = "block";
     
     let text = "", color = "";
-    const c1 = new Date(2020, 7, 24), c2 = new Date(2020, 7, 25), c3 = new Date(2020, 10, 22);
 
-    // المنطق التفصيلي والشامل
-    if (birth <= c1 && years < 7) { text = "الصف الأول الابتدائي"; color = "#2e7d32"; } 
-    else if (birth >= c2 && birth <= c3) { text = "الصف الأول الابتدائي (بشرط الروضة) أو رياض الأطفال (KG3)"; color = "#006064"; }
-    else if (years == 5 || (birth > c3 && years < 6)) { text = "رياض الأطفال - المستوى الثالث (KG3)"; color = "#ad1457"; }
-    else if (years == 4) { text = "رياض الأطفال - المستوى الثاني (KG2)"; color = "#ad1457"; }
-    else if (years == 3) { text = "رياض الأطفال - المستوى الأول (KG1)"; color = "#ad1457"; }
+    // الضبط الدقيق بناءً على توجيهاتك الأخيرة
+    const primaryLimit = new Date(2020, 7, 24);
+    const graceLimitEnd = new Date(2020, 10, 22);
+    const kg3End = new Date(2021, 7, 24);
     
-    // ربط العمر بالصفوف (من 7 سنوات إلى 21 سنة)
+    // النطاق الذي طلبت التأكيد عليه: 25/08/2021 إلى 24/08/2022
+    const kg2Start = new Date(2021, 7, 25);
+    const kg2End = new Date(2022, 7, 24);
+    
+    const kg1Start = new Date(2022, 7, 25);
+    const kg1End = new Date(2023, 7, 24);
+
+    if (birth <= primaryLimit && years < 7) { text = "الصف الأول الابتدائي (الفئة الأولى)"; color = "#2e7d32"; }
+    else if (birth > primaryLimit && birth <= graceLimitEnd) { text = "الصف الأول الابتدائي (بشرط الروضة) أو رياض الأطفال (KG3)"; color = "#006064"; }
+    else if (birth > graceLimitEnd && birth <= kg3End) { text = "رياض الأطفال - المستوى الثالث (KG3)"; color = "#ad1457"; }
+    else if (birth >= kg2Start && birth <= kg2End) { text = "رياض الأطفال - المستوى الثاني (KG2)"; color = "#ad1457"; }
+    else if (birth >= kg1Start && birth <= kg1End) { text = "رياض الأطفال - المستوى الأول (KG1)"; color = "#ad1457"; }
+    
+    // ربط العمر بالصفوف للمراحل العليا
     else if (years == 7) { text = "الصف الثاني الابتدائي"; color = "#2e7d32"; }
     else if (years == 8) { text = "الصف الثالث الابتدائي"; color = "#2e7d32"; }
     else if (years == 9) { text = "الصف الرابع الابتدائي"; color = "#2e7d32"; }
