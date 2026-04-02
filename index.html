@@ -116,7 +116,7 @@ button {
 
   <!-- محول التاريخ -->
   <div class="card">
-    <h2>محول التاريخ (هجري → ميلادي)</h2>
+    <h2>محول التاريخ (الهجري إلى الميلادي)</h2>
 
     <div class="input-row">
       <div>
@@ -158,7 +158,7 @@ button {
       </div>
     </div>
 
-    <button class="calc-btn" onclick="calculate()">احسب</button>
+    <button class="calc-btn" onclick="calculate()">احسب عمر الطالب</button>
 
     <div id="result" style="display:none;">
       <div class="result-box">
@@ -171,6 +171,7 @@ button {
   </div>
 
   <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
+  <div class="footer">allihaibi@gmail.com</div>
 
 </div>
 
@@ -189,7 +190,7 @@ for(let i=1;i<=31;i++) gDay.innerHTML += `<option>${i}</option>`;
 for(let i=1;i<=12;i++) gMonth.innerHTML += `<option>${i}</option>`;
 for(let i=2026;i>=2005;i--) gYear.innerHTML += `<option>${i}</option>`;
 
-// تحويل هجري → ميلادي
+// تحويل الناريخ الهجري إلى الميلادي
 function convertHijri(){
   const d = hDay.value;
   const m = hMonth.value;
@@ -257,7 +258,7 @@ function calculate(){
     stageText = "الصف الأول الابتدائي";
   }
   else if(birth <= c2){
-    stageText = "الصف الأول الابتدائي (فئة ثانية بشرط روضة)";
+    stageText = "الصف الأول الابتدائي (الفئة الثانية بشرط الروضة)";
   }
   else if(birth <= kg3){
     stageText = "رياض أطفال مستوى ثالث";
