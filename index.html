@@ -28,9 +28,9 @@ select { width: 100%; padding: 10px 2px; border: 1px solid var(--gold-accent); b
 .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; background-color: #fdfaf2; color: var(--dark-green); border: 1px solid var(--gold-accent); font-weight: bold; display: none; line-height: 1.8; }
 
 /* توحيد حجم الخط في المربع الأخضر ليكون كبيراً وواضحاً */
-.stage-highlight { background-color: var(--dark-green); color: white; padding: 15px; border-radius: 8px; margin-top: 10px; border-bottom: 4px solid var(--gold-accent); }
+.stage-highlight { background-color: var(--dark-green); color: white; padding: 15px; border-radius: 8px; margin-top: 10px; border-bottom: 4px solid #00332c; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
 #stageText { font-size: 1.3rem; display: block; margin-bottom: 5px; }
-#noteText { font-size: 1.3rem; display: block; font-weight: bold; opacity: 1; }
+#noteText { font-size: 1rem; display: block; font-weight: normal; opacity: 0.9; }
 
 .footer { font-size: 0.95rem; color: var(--dark-green); font-weight: bold; margin-top: 20px; }
 </style>
@@ -117,6 +117,7 @@ function calculateAgeAndStage() {
     const months = diff.months();
     const days = diff.days();
 
+    // عرض العمر بالترتيب: سنوات -> أشهر -> أيام
     document.getElementById('ageText').innerHTML = `عمر الطالب عند بداية الدراسة هو:<br>${years} سنة و ${months} شهر و ${days} يوم`;
     
     const result = getStageByDate(birthDate, years);
@@ -135,17 +136,20 @@ function getStageByDate(birthDate, years) {
     const d2022_08_25 = moment("2022-08-25", "YYYY-MM-DD");
     const d2023_08_24 = moment("2023-08-24", "YYYY-MM-DD");
 
-    if (years > 21) return { stage: "تعليم مستمر", note: "" };
+    // منطق التعليم المستمر
+    if (years > 21) return { stage: "الصف المستحق: تعليم مستمر", note: "" };
     
+    // منطق المراحل الدراسية بناءً على السن
     if (years >= 12) {
-        if (years == 12) return { stage: "الصف الأول المتوسط", note: "" };
-        if (years == 13) return { stage: "الصف الثاني المتوسط", note: "" };
-        if (years == 14) return { stage: "الصف الثالث المتوسط", note: "" };
-        if (years == 15) return { stage: "الصف الأول الثانوي", note: "" };
-        if (years == 16) return { stage: "الصف الثاني الثانوي", note: "" };
-        if (years >= 17) return { stage: "الصف الثالث الثانوي", note: "" };
+        if (years == 12) return { stage: "يستحق: الصف الأول المتوسط", note: "" };
+        if (years == 13) return { stage: "يستحق: الصف الثاني المتوسط", note: "" };
+        if (years == 14) return { stage: "يستحق: الصف الثالث المتوسط", note: "" };
+        if (years == 15) return { stage: "يستحق: الصف الأول الثانوي", note: "" };
+        if (years == 16) return { stage: "يستحق: الصف الثاني الثانوي", note: "" };
+        if (years >= 17) return { stage: "يستحق: الصف الثالث الثانوي", note: "" };
     }
 
+    // منطق المرحلة الابتدائية والروضة حسب تواريخ القبول الرسمية
     if (birthDate.isSameOrBefore(d2020_08_24)) {
         if (years == 6) return { stage: "الصف الأول الابتدائي", note: "الفئة الأولى: أكمل 6 سنوات" };
         if (years == 7) return { stage: "الصف الثاني الابتدائي", note: "" };
@@ -169,7 +173,7 @@ function getStageByDate(birthDate, years) {
         return { stage: "رياض الأطفال - المستوى الأول (KG1)", note: "" };
     }
 
-    return { stage: birthDate.isAfter(d2023_08_24) ? "دون سن القبول" : "مراجعة إدارة التسجيل", note: "" };
+    return { stage: birthDate.isAfter(d2023_08_24) ? "دون سن القبول" : "مراجعة الإدارة", note: "" };
 }
 
 window.onload = init;
