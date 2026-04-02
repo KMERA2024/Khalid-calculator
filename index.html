@@ -46,13 +46,6 @@ body {
 
 h2 { color: var(--dark-green); font-size: 1.1rem; }
 
-.sub-title {
-  color: #555;
-  font-size: 0.9rem;
-  margin: 8px 0;
-  font-weight: bold;
-}
-
 .input-row {
   display: grid;
   grid-template-columns: 1fr 1.2fr 1fr;
@@ -81,6 +74,11 @@ button {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+}
+
+.btn-main {
+  background: var(--dark-green);
+  color: white;
 }
 
 .calc-btn {
@@ -116,21 +114,47 @@ button {
 
 <div class="container">
 
+  <!-- محول التاريخ -->
+  <div class="card">
+    <h2>محول التاريخ (هجري → ميلادي)</h2>
+
+    <div class="input-row">
+      <div>
+        <label>اليوم</label>
+        <select id="hDay"></select>
+      </div>
+      <div>
+        <label>الشهر</label>
+        <select id="hMonth"></select>
+      </div>
+      <div>
+        <label>السنة</label>
+        <select id="hYear"></select>
+      </div>
+    </div>
+
+    <button class="btn-main" onclick="convertHijri()">تحويل</button>
+
+    <div id="hResult" class="result-box" style="display:none;"></div>
+  </div>
+
+
+  <!-- حاسبة العمر -->
   <div class="card">
     <h2>حاسبة أعمار الطلاب</h2>
 
     <div class="input-row">
       <div>
         <label>اليوم</label>
-        <select id="day"></select>
+        <select id="gDay"></select>
       </div>
       <div>
         <label>الشهر</label>
-        <select id="month"></select>
+        <select id="gMonth"></select>
       </div>
       <div>
         <label>السنة</label>
-        <select id="year"></select>
+        <select id="gYear"></select>
       </div>
     </div>
 
@@ -144,25 +168,56 @@ button {
 
       <div class="stage" id="stage"></div>
     </div>
-
   </div>
 
   <div class="footer">تصميم أ. خالد محمد الحربي 2026</div>
 
 </div>
 
+<!-- مكتبات التحويل -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.js"></script>
+
 <script>
 
 // تعبئة القوائم
-for(let i=1;i<=31;i++) day.innerHTML += `<option>${i}</option>`;
-for(let i=1;i<=12;i++) month.innerHTML += `<option>${i}</option>`;
-for(let i=2026;i>=2005;i--) year.innerHTML += `<option>${i}</option>`;
+for(let i=1;i<=30;i++) hDay.innerHTML += `<option>${i}</option>`;
+for(let i=1;i<=12;i++) hMonth.innerHTML += `<option>${i}</option>`;
+for(let i=1460;i>=1400;i--) hYear.innerHTML += `<option>${i}</option>`;
 
+for(let i=1;i<=31;i++) gDay.innerHTML += `<option>${i}</option>`;
+for(let i=1;i<=12;i++) gMonth.innerHTML += `<option>${i}</option>`;
+for(let i=2026;i>=2005;i--) gYear.innerHTML += `<option>${i}</option>`;
+
+// تحويل هجري → ميلادي
+function convertHijri(){
+  const d = hDay.value;
+  const m = hMonth.value;
+  const y = hYear.value;
+
+  const resultBox = document.getElementById("hResult");
+
+  const date = moment(`${y}/${m}/${d}`, 'iYYYY/iM/iD');
+
+  if(date.isValid()){
+    resultBox.style.display = "block";
+    resultBox.innerText =
+      "التاريخ الميلادي: " +
+      date.date() + "/" +
+      (date.month()+1) + "/" +
+      date.year();
+  } else {
+    resultBox.style.display = "block";
+    resultBox.innerText = "⚠️ تاريخ غير صحيح";
+  }
+}
+
+// حساب العمر
 function calculate(){
 
-  const d = parseInt(day.value);
-  const m = parseInt(month.value);
-  const y = parseInt(year.value);
+  const d = parseInt(gDay.value);
+  const m = parseInt(gMonth.value);
+  const y = parseInt(gYear.value);
 
   const birth = new Date(y, m-1, d);
   const target = new Date(2026,7,24);
@@ -172,7 +227,6 @@ function calculate(){
     return;
   }
 
-  // حساب العمر
   let years = target.getFullYear() - birth.getFullYear();
   let months = target.getMonth() - birth.getMonth();
   let days = target.getDate() - birth.getDate();
@@ -188,9 +242,9 @@ function calculate(){
   }
 
   document.getElementById("result").style.display = "block";
-  document.getElementById("age").innerText = years + " سنة - " + months + " شهر - " + days + " يوم";
+  document.getElementById("age").innerText =
+    years + " سنة - " + months + " شهر - " + days + " يوم";
 
-  // تحديد المرحلة (الحل النهائي 🔥)
   let stageText = "";
 
   const c1 = new Date(2020,7,24);
