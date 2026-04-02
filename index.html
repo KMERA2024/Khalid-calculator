@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة القبول الدراسي المعتمدة 2026</title>
+    <title>حاسبة أعمار الطلاب المستجدين للعام الدراسي 1448هـ</title>
     <style>
         :root {
             --dark-green: #004d40;
@@ -42,7 +42,7 @@
 
 <div class="container">
     <div class="card">
-        <h2>🔄 محول التاريخ الهجري</h2>
+        <h2>محول التاريخ الهجري إلى الميلادي</h2>
         <div class="input-row">
             <div><label>اليوم</label><select id="hDay"></select></div>
             <div><label>الشهر الهجري</label><select id="hMonth"></select></div>
@@ -53,15 +53,15 @@
     </div>
 
     <div class="card">
-        <h2>🎓 حاسبة القبول الدراسي لعام 2026</h2>
+        <h2>حاسبة أعمار الطلاب المستجدين للعام الدراسي 1448هـ</h2>
         <div class="input-row">
             <div><label>اليوم</label><select id="gDay"></select></div>
             <div><label>الشهر الميلادي</label><select id="gMonth"></select></div>
             <div><label>السنة</label><select id="gYear"></select></div>
         </div>
-        <button class="calc-btn" onclick="calculate()">احسب العمر والمرحلة</button>
+        <button class="calc-btn" onclick="calculate()">احسب العمر والصف المستحق</button>
         <div id="resultArea" style="display:none;">
-            <div class="result-box">العمر التفصيلي: <div class="age-display" id="ageOutput"></div></div>
+            <div class="result-box">العمر : <div class="age-display" id="ageOutput"></div></div>
             <div class="stage" id="stageOutput"></div>
         </div>
     </div>
